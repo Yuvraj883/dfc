@@ -35,6 +35,10 @@ export default function CheckoutPage() {
   const placeOrder = async () => {
     setLoading(true);
     setError("");
+    
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 seconds timeout
+    
     try {
       const order = await api.createOrder(
         {
@@ -52,22 +56,28 @@ export default function CheckoutPage() {
           guest_phone: phone || undefined,
           loyalty_points_redeem: loyaltyRedeem,
         },
-        tableToken
+        tableToken,
+        { signal: controller.signal }
       );
 
       if (paymentMethod === "stripe") {
-        const intent = await api.createPaymentIntent(order.id);
+        const intent = await api.createPaymentIntent(order.id, { signal: controller.signal });
         if (intent.mock) {
-          await api.confirmMockPayment(order.id, intent.payment_intent_id);
+          await api.confirmMockPayment(order.id, intent.payment_intent_id, { signal: controller.signal });
         }
       }
 
       clear();
       const tokenParam = order.guest_token ? `?token=${order.guest_token}` : "";
       router.push(`/orders/${order.id}${tokenParam}`);
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "Order failed");
+    } catch (e: any) {
+      if (e.name === 'AbortError' || e.message?.includes('AbortError')) {
+        setError("Request timed out. Please check your connection and try again.");
+      } else {
+        setError(e instanceof Error ? e.message : "Order failed");
+      }
     } finally {
+      clearTimeout(timeoutId);
       setLoading(false);
     }
   };

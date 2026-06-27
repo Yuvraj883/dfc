@@ -144,9 +144,9 @@ export const api = {
     request<User>(`/api/auth/google/callback?code=${code}`, { method: "POST" }),
   validateTable: (token: string) =>
     request<{ valid: boolean; expires_at: string }>(`/api/table/validate?t=${token}`),
-  createOrder: (data: unknown, tableToken?: string | null) => {
+  createOrder: (data: unknown, tableToken?: string | null, options?: RequestInit) => {
     const qs = tableToken ? `?t=${tableToken}` : "";
-    return request<Order>(`/api/orders${qs}`, { method: "POST", body: JSON.stringify(data) });
+    return request<Order>(`/api/orders${qs}`, { method: "POST", body: JSON.stringify(data), ...options });
   },
   getOrder: (id: string, token?: string) => {
     const qs = token ? `?token=${token}` : "";
@@ -164,15 +164,15 @@ export const api = {
     request<unknown>("/api/reservations", { method: "POST", body: JSON.stringify(data) }),
   cancelReservation: (token: string) =>
     request<{ ok: boolean }>(`/api/reservations/cancel?token=${token}`, { method: "POST" }),
-  createPaymentIntent: (orderId: string) =>
+  createPaymentIntent: (orderId: string, options?: RequestInit) =>
     request<{ client_secret: string; payment_intent_id: string; mock: boolean }>(
       `/api/payments/create-intent?order_id=${orderId}`,
-      { method: "POST" }
+      { method: "POST", ...options }
     ),
-  confirmMockPayment: (orderId: string, paymentIntentId: string) =>
+  confirmMockPayment: (orderId: string, paymentIntentId: string, options?: RequestInit) =>
     request<{ ok: boolean }>(
       `/api/payments/confirm-mock/${orderId}?payment_intent_id=${paymentIntentId}`,
-      { method: "POST" }
+      { method: "POST", ...options }
     ),
   submitCatering: (data: unknown) =>
     request<{ ok: boolean; message: string }>("/api/catering", { method: "POST", body: JSON.stringify(data) }),
