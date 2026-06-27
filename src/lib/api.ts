@@ -139,6 +139,9 @@ export const api = {
     request<{ access_token: string }>("/api/auth/login", { method: "POST", body: JSON.stringify(data) }),
   logout: () => request<{ ok: boolean }>("/api/auth/logout", { method: "POST" }),
   me: () => request<User>("/api/auth/me"),
+  getGoogleLoginUrl: () => request<{ url: string }>("/api/auth/google/login"),
+  googleCallback: (code: string) => 
+    request<User>(`/api/auth/google/callback?code=${code}`, { method: "POST" }),
   validateTable: (token: string) =>
     request<{ valid: boolean; expires_at: string }>(`/api/table/validate?t=${token}`),
   createOrder: (data: unknown, tableToken?: string | null) => {
