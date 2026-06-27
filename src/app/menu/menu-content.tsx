@@ -28,61 +28,60 @@ function ItemCard({
     setSelected((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
 
   return (
-    <div className="group relative flex flex-col overflow-hidden rounded-[2rem] border border-white/10 bg-zinc-900/50 backdrop-blur-xl shadow-2xl shadow-black/50 transition-all duration-300 hover:-translate-y-1 hover:shadow-dfc-yellow/10 hover:border-white/20">
-      <div className="relative flex h-56 items-center justify-center bg-zinc-950 overflow-hidden">
+    <div className="group relative flex flex-col overflow-hidden rounded-[2rem] border border-zinc-100 bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_20px_50px_rgb(0,0,0,0.08)] hover:border-zinc-200">
+      <div className="relative flex h-56 items-center justify-center bg-zinc-50 overflow-hidden">
         {item.image_url ? (
           /* eslint-disable-next-line @next/next/no-img-element */
-          <img src={item.image_url} alt={item.name} className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110 opacity-90 group-hover:opacity-100" />
+          <img src={item.image_url} alt={item.name} className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" />
         ) : (
-          <span className="text-6xl transition-transform duration-500 group-hover:scale-110 opacity-70">
+          <span className="text-6xl transition-transform duration-500 group-hover:scale-110 drop-shadow-sm">
             {item.is_vegetarian ? "🥗" : "🍗"}
           </span>
         )}
-        <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/20 to-transparent opacity-80" />
         
         <div className="absolute top-4 left-4 flex flex-col gap-2">
           {item.is_vegetarian && (
-            <span className="inline-flex items-center gap-1 rounded-full bg-green-500/20 border border-green-500/30 backdrop-blur-md px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-widest text-green-400 shadow-sm">
+            <span className="inline-flex items-center gap-1 rounded-full bg-green-50 border border-green-200 px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-widest text-green-700 shadow-sm backdrop-blur-md">
               <Leaf className="h-3 w-3" /> Veg
             </span>
           )}
           {item.spice_level >= 2 && (
-            <span className="inline-flex items-center gap-1 rounded-full bg-red-500/20 border border-red-500/30 backdrop-blur-md px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-widest text-red-400 shadow-sm">
+            <span className="inline-flex items-center gap-1 rounded-full bg-red-50 border border-red-200 px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-widest text-red-700 shadow-sm backdrop-blur-md">
               <Flame className="h-3 w-3" /> Spicy
             </span>
           )}
           {item.is_featured && (
-            <span className="inline-flex items-center gap-1 rounded-full bg-dfc-yellow/20 border border-dfc-yellow/30 backdrop-blur-md px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-widest text-dfc-yellow shadow-sm">
+            <span className="inline-flex items-center gap-1 rounded-full bg-dfc-yellow/10 border border-dfc-yellow/30 px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-widest text-dfc-yellow-700 shadow-sm backdrop-blur-md">
               <Star className="h-3 w-3" /> Popular
             </span>
           )}
         </div>
       </div>
       
-      <div className="flex flex-1 flex-col p-6">
+      <div className="flex flex-1 flex-col p-6 bg-white z-10">
         <div className="flex items-start justify-between gap-3 mb-2">
-          <h3 className="font-display text-xl font-bold text-white leading-tight">{item.name}</h3>
-          <span className="shrink-0 rounded-full bg-dfc-red/10 px-3 py-1 text-sm font-extrabold text-dfc-red border border-dfc-red/20 drop-shadow-md">
+          <h3 className="font-display text-xl font-bold text-zinc-900 leading-tight">{item.name}</h3>
+          <span className="shrink-0 rounded-full bg-dfc-red/10 px-3 py-1 text-sm font-extrabold text-dfc-red border border-dfc-red/20">
             {formatPrice(item.price + extra)}
           </span>
         </div>
-        <p className="mb-6 text-sm text-gray-400 line-clamp-2 leading-relaxed font-light">{item.description}</p>
+        <p className="mb-6 text-sm text-zinc-500 line-clamp-2 leading-relaxed font-light">{item.description}</p>
         
         {[...item.customizations, ...globalCustomizations].length > 0 && (
-          <div className="mb-6 space-y-2 rounded-xl bg-zinc-950/50 p-4 border border-white/5">
-            <span className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Add-ons</span>
+          <div className="mb-6 space-y-2 rounded-xl bg-zinc-50 p-4 border border-zinc-100">
+            <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Add-ons</span>
             {[...item.customizations, ...globalCustomizations].map((c) => (
               <label key={c.id} className="flex cursor-pointer items-center justify-between group/label" onClick={() => toggle(c.id)}>
-                <div className="flex items-center gap-2 text-sm font-medium text-gray-300 group-hover/label:text-white transition-colors">
+                <div className="flex items-center gap-2 text-sm font-medium text-zinc-600 group-hover/label:text-zinc-900 transition-colors">
                   <div className={cn(
                     "flex h-4 w-4 items-center justify-center rounded border transition-colors",
-                    selected.includes(c.id) ? "border-dfc-red bg-dfc-red text-white" : "border-white/20 bg-zinc-900"
+                    selected.includes(c.id) ? "border-dfc-red bg-dfc-red text-white" : "border-zinc-300 bg-white"
                   )}>
                     {selected.includes(c.id) && <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>}
                   </div>
                   {c.name}
                 </div>
-                <span className="text-xs text-dfc-yellow/80">+{formatPrice(c.extra_price)}</span>
+                <span className="text-xs font-semibold text-zinc-500">+{formatPrice(c.extra_price)}</span>
               </label>
             ))}
           </div>
@@ -94,7 +93,7 @@ function ItemCard({
             const labels = all.filter((c) => selected.includes(c.id)).map((c) => c.name);
             onAdd(item, selected, labels, extra);
           }}
-          className="mt-auto flex w-full items-center justify-center gap-2 rounded-full bg-dfc-red py-3.5 text-sm font-bold text-white shadow-[0_0_20px_rgba(230,46,53,0.2)] transition-all hover:-translate-y-0.5 hover:bg-dfc-red-dark hover:shadow-[0_0_30px_rgba(230,46,53,0.4)] active:translate-y-0 active:shadow-md"
+          className="mt-auto flex w-full items-center justify-center gap-2 rounded-full bg-zinc-900 py-3.5 text-sm font-bold text-white shadow-[0_10px_20px_-10px_rgba(0,0,0,0.5)] transition-all hover:-translate-y-0.5 hover:bg-dfc-red hover:shadow-[0_10px_20px_-10px_rgba(230,46,53,0.5)] active:translate-y-0 active:shadow-sm active:scale-95"
         >
           <Plus className="h-5 w-5" />
           Add to Cart
@@ -115,16 +114,16 @@ function CategorySection({
 }) {
   const { ref, inView } = useInView({
     triggerOnce: true,
-    rootMargin: "400px 0px", // Load slightly before it comes into view
+    rootMargin: "400px 0px",
   });
 
   return (
-    <section ref={ref} id={cat.slug} className="mb-20 scroll-mt-24">
+    <section ref={ref} id={cat.slug} className="mb-20 scroll-mt-32">
       <div className="mb-8 flex items-center gap-4">
-        <h2 className="font-display text-3xl font-extrabold text-white md:text-4xl drop-shadow-md">
+        <h2 className="font-display text-3xl font-extrabold text-zinc-900 md:text-4xl">
           {cat.name}
         </h2>
-        <div className="h-px flex-1 bg-gradient-to-r from-white/20 to-transparent" />
+        <div className="h-px flex-1 bg-gradient-to-r from-zinc-200 to-transparent" />
       </div>
       
       {inView ? (
@@ -141,7 +140,7 @@ function CategorySection({
       ) : (
         <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
           {[1, 2, 3].map(i => (
-            <div key={i} className="h-[450px] rounded-[2rem] bg-zinc-900/40 animate-pulse border border-white/5" />
+            <div key={i} className="h-[450px] rounded-[2rem] bg-zinc-100 animate-pulse border border-zinc-50" />
           ))}
         </div>
       )}
@@ -189,34 +188,33 @@ export default function MenuPage() {
   };
 
   return (
-    <div className="min-h-screen bg-zinc-950 pt-24 pb-32 selection:bg-dfc-red selection:text-white">
+    <div className="min-h-screen bg-[#FAFAFA] pt-24 pb-32 selection:bg-dfc-red selection:text-white">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {tableToken && (
-          <div className="mb-10 flex items-center gap-4 rounded-2xl border border-dfc-yellow/20 bg-dfc-yellow/10 px-6 py-4 text-dfc-yellow shadow-lg backdrop-blur-md">
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-dfc-yellow/20 text-2xl border border-dfc-yellow/30">🪑</div>
+          <div className="mb-10 flex items-center gap-4 rounded-2xl border border-dfc-yellow/30 bg-dfc-yellow/10 px-6 py-4 text-dfc-yellow-800 shadow-sm backdrop-blur-md">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-white text-2xl border border-dfc-yellow/30 shadow-sm">🪑</div>
             <div>
               <h4 className="font-bold text-lg">Dine-in mode active</h4>
-              <p className="text-sm text-dfc-yellow/80">Your order will be served directly to your table.</p>
+              <p className="text-sm">Your order will be served directly to your table.</p>
             </div>
           </div>
         )}
 
         <div className="mb-12 text-center relative">
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-72 h-72 bg-dfc-red/20 blur-[100px] rounded-full pointer-events-none"></div>
-          <h1 className="font-display mb-4 text-5xl font-extrabold md:text-6xl lg:text-7xl text-white tracking-tight relative z-10 drop-shadow-xl">
-            Our <span className="text-transparent bg-clip-text bg-gradient-to-r from-dfc-red to-dfc-yellow">Menu</span>
+          <h1 className="font-display mb-4 text-5xl font-extrabold md:text-6xl lg:text-7xl text-zinc-900 tracking-tight relative z-10">
+            Our <span className="text-transparent bg-clip-text bg-gradient-to-r from-dfc-red to-dfc-red-dark">Menu</span>
           </h1>
-          <p className="text-xl text-gray-400 font-light relative z-10">Fresh, crispy, and made to order just for you.</p>
+          <p className="text-xl text-zinc-500 font-light relative z-10">Fresh, crispy, and made to order just for you.</p>
         </div>
 
-        <div className="mb-16 flex flex-col gap-4 md:flex-row md:items-center md:justify-between rounded-[2rem] bg-zinc-900/50 p-4 shadow-2xl border border-white/10 backdrop-blur-xl">
+        <div className="mb-16 sticky top-24 z-30 flex flex-col gap-4 md:flex-row md:items-center md:justify-between rounded-[2rem] bg-white/80 p-4 shadow-lg shadow-zinc-200/50 border border-zinc-100 backdrop-blur-xl">
           <div className="relative w-full md:max-w-md">
-            <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
+            <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-zinc-400" />
             <input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search for burgers, buckets..."
-              className="w-full rounded-2xl bg-zinc-950 py-3.5 pl-12 pr-4 text-sm font-medium text-white placeholder-gray-500 transition-colors focus:bg-zinc-900 focus:outline-none focus:ring-2 focus:ring-dfc-red border border-white/5"
+              className="w-full rounded-2xl bg-zinc-50 py-3.5 pl-12 pr-4 text-sm font-medium text-zinc-900 placeholder-zinc-400 transition-colors focus:bg-white focus:outline-none focus:ring-2 focus:ring-dfc-red/50 border border-zinc-200"
             />
           </div>
           <div className="flex w-full flex-wrap gap-2 md:w-auto">
@@ -229,10 +227,10 @@ export default function MenuPage() {
                 key={f.key}
                 onClick={() => setFilter(filter === f.key ? null : f.key)}
                 className={cn(
-                  "flex items-center gap-2 rounded-full px-6 py-3 text-sm font-bold transition-all duration-300 border",
+                  "flex items-center gap-2 rounded-full px-6 py-3 text-sm font-bold transition-all duration-300 border active:scale-95",
                   filter === f.key 
-                    ? "bg-dfc-red text-white shadow-[0_0_15px_rgba(230,46,53,0.4)] border-dfc-red scale-105" 
-                    : "bg-zinc-950 text-gray-400 hover:bg-zinc-900 hover:text-white border-white/10"
+                    ? "bg-dfc-red text-white shadow-[0_5px_15px_-5px_rgba(230,46,53,0.5)] border-dfc-red" 
+                    : "bg-zinc-50 text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 border-zinc-200"
                 )}
               >
                 {f.icon}
@@ -245,7 +243,7 @@ export default function MenuPage() {
         {isLoading ? (
           <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
             {[1, 2, 3, 4, 5, 6].map((i) => (
-              <div key={i} className="h-[450px] animate-pulse rounded-[2rem] bg-zinc-900/50 border border-white/5" />
+              <div key={i} className="h-[450px] animate-pulse rounded-[2rem] bg-zinc-100 border border-zinc-50" />
             ))}
           </div>
         ) : (

@@ -84,74 +84,96 @@ export default function CheckoutPage() {
 
   if (items.length === 0) {
     return (
-      <div className="mx-auto max-w-lg px-4 py-20 text-center">
-        <h1 className="text-2xl font-bold">Nothing to checkout</h1>
+      <div className="mx-auto max-w-lg px-4 py-32 text-center min-h-[70vh] flex items-center justify-center">
+        <h1 className="text-3xl font-extrabold text-zinc-900">Nothing to checkout</h1>
       </div>
     );
   }
 
   return (
-    <div className="mx-auto max-w-lg px-4 py-8">
-      <h1 className="mb-6 text-3xl font-bold">Checkout</h1>
-      <div className="space-y-4">
-        <input
-          placeholder="Name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          className="w-full rounded-lg border border-orange-200 px-4 py-2"
-        />
-        <input
-          placeholder="Email"
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          className="w-full rounded-lg border border-orange-200 px-4 py-2"
-        />
-        <input
-          placeholder="Phone"
-          value={phone}
-          onChange={(e) => setPhone(e.target.value)}
-          className="w-full rounded-lg border border-orange-200 px-4 py-2"
-        />
-        <div className="flex gap-2">
-          <input
-            placeholder="Promo code"
-            value={promoInput}
-            onChange={(e) => setPromoInput(e.target.value)}
-            className="flex-1 rounded-lg border border-orange-200 px-4 py-2"
-          />
-          <button onClick={applyPromo} className="rounded-lg bg-orange-100 px-4 py-2 text-sm font-semibold">
-            Apply
+    <div className="min-h-screen bg-[#FAFAFA] pt-24 pb-32 text-zinc-900">
+      <div className="mx-auto max-w-lg px-4">
+        <h1 className="mb-8 text-4xl font-extrabold tracking-tight">Checkout</h1>
+        <div className="space-y-5 rounded-[2.5rem] border border-zinc-100 bg-white p-8 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.05)]">
+          <div>
+            <label className="text-sm font-bold text-zinc-600 mb-1 block">Full Name</label>
+            <input
+              placeholder="Your Name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="w-full rounded-2xl bg-zinc-50 border border-zinc-200 px-5 py-3.5 focus:bg-white focus:outline-none focus:ring-2 focus:ring-dfc-red/30 transition-colors text-zinc-900 placeholder-zinc-400 font-medium"
+            />
+          </div>
+          <div>
+            <label className="text-sm font-bold text-zinc-600 mb-1 block">Email</label>
+            <input
+              placeholder="Your Email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full rounded-2xl bg-zinc-50 border border-zinc-200 px-5 py-3.5 focus:bg-white focus:outline-none focus:ring-2 focus:ring-dfc-red/30 transition-colors text-zinc-900 placeholder-zinc-400 font-medium"
+            />
+          </div>
+          <div>
+            <label className="text-sm font-bold text-zinc-600 mb-1 block">Phone Number</label>
+            <input
+              placeholder="Your Phone"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              className="w-full rounded-2xl bg-zinc-50 border border-zinc-200 px-5 py-3.5 focus:bg-white focus:outline-none focus:ring-2 focus:ring-dfc-red/30 transition-colors text-zinc-900 placeholder-zinc-400 font-medium"
+            />
+          </div>
+          
+          <div className="pt-2">
+            <label className="text-sm font-bold text-zinc-600 mb-1 block">Promo Code</label>
+            <div className="flex gap-2">
+              <input
+                placeholder="Enter code"
+                value={promoInput}
+                onChange={(e) => setPromoInput(e.target.value)}
+                className="flex-1 rounded-2xl bg-zinc-50 border border-zinc-200 px-5 py-3.5 focus:bg-white focus:outline-none focus:ring-2 focus:ring-dfc-red/30 transition-colors text-zinc-900 placeholder-zinc-400 font-medium"
+              />
+              <button onClick={applyPromo} className="rounded-2xl bg-zinc-900 px-6 py-3.5 text-sm font-bold text-white hover:bg-zinc-800 transition-all active:scale-95">
+                Apply
+              </button>
+            </div>
+          </div>
+          
+          <div className="pt-4 border-t border-zinc-100">
+            <label className="text-sm font-bold text-zinc-600 mb-2 block">Payment Method</label>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setPaymentMethod("stripe")}
+                className={`flex-1 rounded-2xl border-2 py-3.5 text-sm font-bold transition-all active:scale-95 ${paymentMethod === "stripe" ? "border-dfc-red bg-red-50 text-dfc-red shadow-[0_5px_15px_-5px_rgba(230,46,53,0.3)]" : "border-zinc-100 bg-zinc-50 text-zinc-500 hover:border-zinc-200 hover:bg-zinc-100"}`}
+              >
+                Pay Online
+              </button>
+              <button
+                onClick={() => setPaymentMethod("pay_at_counter")}
+                className={`flex-1 rounded-2xl border-2 py-3.5 text-sm font-bold transition-all active:scale-95 ${paymentMethod === "pay_at_counter" ? "border-dfc-red bg-red-50 text-dfc-red shadow-[0_5px_15px_-5px_rgba(230,46,53,0.3)]" : "border-zinc-100 bg-zinc-50 text-zinc-500 hover:border-zinc-200 hover:bg-zinc-100"}`}
+              >
+                Pay at Counter
+              </button>
+            </div>
+          </div>
+          
+          <div className="rounded-2xl bg-zinc-50 p-6 border border-zinc-100 mt-4">
+            <div className="flex justify-between text-lg items-center">
+              <span className="font-bold text-zinc-600">Total to Pay</span>
+              <span className="text-2xl font-extrabold text-dfc-red">{formatPrice(total)}</span>
+            </div>
+          </div>
+          
+          {error && <p className="text-sm font-medium text-dfc-red text-center mt-2">{error}</p>}
+          
+          <button
+            onClick={placeOrder}
+            disabled={loading}
+            className="mt-6 w-full rounded-full bg-dfc-red py-4 font-bold text-lg text-white shadow-[0_10px_30px_-10px_rgba(230,46,53,0.6)] hover:bg-dfc-red-dark hover:shadow-[0_20px_50px_-10px_rgba(230,46,53,0.8)] transition-all hover:-translate-y-1 active:scale-[0.98] active:translate-y-0 disabled:opacity-70 disabled:hover:translate-y-0 disabled:shadow-none"
+          >
+            {loading ? "Processing..." : "Place Order"}
           </button>
         </div>
-        <div>
-          <label className="text-sm font-medium">Payment Method</label>
-          <div className="mt-2 flex gap-3">
-            <button
-              onClick={() => setPaymentMethod("stripe")}
-              className={`flex-1 rounded-lg border py-2 text-sm font-medium ${paymentMethod === "stripe" ? "border-dfc-red bg-red-50 text-dfc-red" : "border-gray-200"}`}
-            >
-              Pay Online
-            </button>
-            <button
-              onClick={() => setPaymentMethod("pay_at_counter")}
-              className={`flex-1 rounded-lg border py-2 text-sm font-medium ${paymentMethod === "pay_at_counter" ? "border-dfc-red bg-red-50 text-dfc-red" : "border-gray-200"}`}
-            >
-              Pay at Counter
-            </button>
-          </div>
-        </div>
-        <div className="rounded-xl bg-orange-50 p-4">
-          <div className="flex justify-between text-sm"><span>Total</span><span className="font-bold text-dfc-red">{formatPrice(total)}</span></div>
-        </div>
-        {error && <p className="text-sm text-red-600">{error}</p>}
-        <button
-          onClick={placeOrder}
-          disabled={loading}
-          className="w-full rounded-full bg-dfc-red py-3 font-semibold text-white hover:bg-dfc-red-dark disabled:opacity-50"
-        >
-          {loading ? "Placing Order..." : "Place Order"}
-        </button>
       </div>
     </div>
   );
