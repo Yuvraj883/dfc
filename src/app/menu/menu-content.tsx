@@ -1,10 +1,10 @@
-"use client";
-
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { Flame, Leaf, Search, Star, Plus } from "lucide-react";
-import { api, type MenuItem, type Customization } from "@/lib/api";
+import { toast } from "sonner";
+import { useInView } from "react-intersection-observer";
+import { api, type MenuItem, type Customization, type MenuCategory } from "@/lib/api";
 import { formatPrice, cn } from "@/lib/utils";
 import { useCart } from "@/store/cart";
 
@@ -26,31 +26,31 @@ function ItemCard({
     setSelected((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
 
   return (
-    <div className="group relative flex flex-col overflow-hidden rounded-[2rem] border border-gray-100 bg-white shadow-lg shadow-gray-200/40 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-orange-900/10">
-      <div className="relative flex h-48 items-center justify-center bg-gray-50 overflow-hidden">
+    <div className="group relative flex flex-col overflow-hidden rounded-[2rem] border border-white/10 bg-zinc-900/50 backdrop-blur-xl shadow-2xl shadow-black/50 transition-all duration-300 hover:-translate-y-1 hover:shadow-dfc-yellow/10 hover:border-white/20">
+      <div className="relative flex h-56 items-center justify-center bg-zinc-950 overflow-hidden">
         {item.image_url ? (
           /* eslint-disable-next-line @next/next/no-img-element */
-          <img src={item.image_url} alt={item.name} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110" />
+          <img src={item.image_url} alt={item.name} className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110 opacity-90 group-hover:opacity-100" />
         ) : (
-          <span className="text-6xl transition-transform duration-500 group-hover:scale-110">
+          <span className="text-6xl transition-transform duration-500 group-hover:scale-110 opacity-70">
             {item.is_vegetarian ? "🥗" : "🍗"}
           </span>
         )}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+        <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/20 to-transparent opacity-80" />
         
         <div className="absolute top-4 left-4 flex flex-col gap-2">
           {item.is_vegetarian && (
-            <span className="inline-flex items-center gap-1 rounded-full bg-white/90 backdrop-blur-sm px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-widest text-green-700 shadow-sm">
+            <span className="inline-flex items-center gap-1 rounded-full bg-green-500/20 border border-green-500/30 backdrop-blur-md px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-widest text-green-400 shadow-sm">
               <Leaf className="h-3 w-3" /> Veg
             </span>
           )}
           {item.spice_level >= 2 && (
-            <span className="inline-flex items-center gap-1 rounded-full bg-white/90 backdrop-blur-sm px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-widest text-red-700 shadow-sm">
+            <span className="inline-flex items-center gap-1 rounded-full bg-red-500/20 border border-red-500/30 backdrop-blur-md px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-widest text-red-400 shadow-sm">
               <Flame className="h-3 w-3" /> Spicy
             </span>
           )}
           {item.is_featured && (
-            <span className="inline-flex items-center gap-1 rounded-full bg-white/90 backdrop-blur-sm px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-widest text-yellow-600 shadow-sm">
+            <span className="inline-flex items-center gap-1 rounded-full bg-dfc-yellow/20 border border-dfc-yellow/30 backdrop-blur-md px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-widest text-dfc-yellow shadow-sm">
               <Star className="h-3 w-3" /> Popular
             </span>
           )}
@@ -59,28 +59,28 @@ function ItemCard({
       
       <div className="flex flex-1 flex-col p-6">
         <div className="flex items-start justify-between gap-3 mb-2">
-          <h3 className="font-display text-lg font-bold text-gray-900 leading-tight">{item.name}</h3>
-          <span className="shrink-0 rounded-full bg-orange-50 px-3 py-1 text-sm font-extrabold text-dfc-red border border-orange-100">
+          <h3 className="font-display text-xl font-bold text-white leading-tight">{item.name}</h3>
+          <span className="shrink-0 rounded-full bg-dfc-red/10 px-3 py-1 text-sm font-extrabold text-dfc-red border border-dfc-red/20 drop-shadow-md">
             {formatPrice(item.price + extra)}
           </span>
         </div>
-        <p className="mb-4 text-sm text-gray-500 line-clamp-2 leading-relaxed">{item.description}</p>
+        <p className="mb-6 text-sm text-gray-400 line-clamp-2 leading-relaxed font-light">{item.description}</p>
         
         {[...item.customizations, ...globalCustomizations].length > 0 && (
-          <div className="mb-4 space-y-2 rounded-xl bg-gray-50 p-3 border border-gray-100">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-gray-400">Add-ons</span>
+          <div className="mb-6 space-y-2 rounded-xl bg-zinc-950/50 p-4 border border-white/5">
+            <span className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Add-ons</span>
             {[...item.customizations, ...globalCustomizations].map((c) => (
               <label key={c.id} className="flex cursor-pointer items-center justify-between group/label" onClick={() => toggle(c.id)}>
-                <div className="flex items-center gap-2 text-xs font-medium text-gray-700 group-hover/label:text-gray-900 transition-colors">
+                <div className="flex items-center gap-2 text-sm font-medium text-gray-300 group-hover/label:text-white transition-colors">
                   <div className={cn(
                     "flex h-4 w-4 items-center justify-center rounded border transition-colors",
-                    selected.includes(c.id) ? "border-dfc-red bg-dfc-red text-white" : "border-gray-300 bg-white"
+                    selected.includes(c.id) ? "border-dfc-red bg-dfc-red text-white" : "border-white/20 bg-zinc-900"
                   )}>
                     {selected.includes(c.id) && <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>}
                   </div>
                   {c.name}
                 </div>
-                <span className="text-xs text-gray-500">+{formatPrice(c.extra_price)}</span>
+                <span className="text-xs text-dfc-yellow/80">+{formatPrice(c.extra_price)}</span>
               </label>
             ))}
           </div>
@@ -92,13 +92,58 @@ function ItemCard({
             const labels = all.filter((c) => selected.includes(c.id)).map((c) => c.name);
             onAdd(item, selected, labels, extra);
           }}
-          className="mt-auto flex w-full items-center justify-center gap-2 rounded-xl bg-gray-900 py-3 text-sm font-bold text-white shadow-md transition-all hover:-translate-y-0.5 hover:bg-black hover:shadow-xl active:translate-y-0 active:shadow-md"
+          className="mt-auto flex w-full items-center justify-center gap-2 rounded-full bg-dfc-red py-3.5 text-sm font-bold text-white shadow-[0_0_20px_rgba(230,46,53,0.2)] transition-all hover:-translate-y-0.5 hover:bg-dfc-red-dark hover:shadow-[0_0_30px_rgba(230,46,53,0.4)] active:translate-y-0 active:shadow-md"
         >
-          <Plus className="h-4 w-4" />
+          <Plus className="h-5 w-5" />
           Add to Cart
         </button>
       </div>
     </div>
+  );
+}
+
+function CategorySection({ 
+  cat, 
+  globalCustomizations, 
+  handleAdd 
+}: { 
+  cat: MenuCategory; 
+  globalCustomizations: Customization[];
+  handleAdd: any;
+}) {
+  const { ref, inView } = useInView({
+    triggerOnce: true,
+    rootMargin: "400px 0px", // Load slightly before it comes into view
+  });
+
+  return (
+    <section ref={ref} id={cat.slug} className="mb-20 scroll-mt-24">
+      <div className="mb-8 flex items-center gap-4">
+        <h2 className="font-display text-3xl font-extrabold text-white md:text-4xl drop-shadow-md">
+          {cat.name}
+        </h2>
+        <div className="h-px flex-1 bg-gradient-to-r from-white/20 to-transparent" />
+      </div>
+      
+      {inView ? (
+        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+          {cat.items.map((item) => (
+            <ItemCard
+              key={item.id}
+              item={item}
+              globalCustomizations={globalCustomizations}
+              onAdd={handleAdd}
+            />
+          ))}
+        </div>
+      ) : (
+        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+          {[1, 2, 3].map(i => (
+            <div key={i} className="h-[450px] rounded-[2rem] bg-zinc-900/40 animate-pulse border border-white/5" />
+          ))}
+        </div>
+      )}
+    </section>
   );
 }
 
@@ -138,86 +183,80 @@ export default function MenuPage() {
       customizationLabels: labels,
       customizationExtra: extra,
     });
+    toast.success(`Added ${item.name} to cart!`);
   };
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-8 md:py-12">
-      {tableToken && (
-        <div className="mb-8 flex items-center gap-3 rounded-2xl border border-green-200 bg-green-50 px-6 py-4 text-green-800 shadow-sm">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-green-100 text-xl">🪑</div>
-          <div>
-            <h4 className="font-bold">Dine-in mode active</h4>
-            <p className="text-sm text-green-700">Your order will be served directly to your table.</p>
+    <div className="min-h-screen bg-zinc-950 pt-24 pb-32 selection:bg-dfc-red selection:text-white">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        {tableToken && (
+          <div className="mb-10 flex items-center gap-4 rounded-2xl border border-dfc-yellow/20 bg-dfc-yellow/10 px-6 py-4 text-dfc-yellow shadow-lg backdrop-blur-md">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-dfc-yellow/20 text-2xl border border-dfc-yellow/30">🪑</div>
+            <div>
+              <h4 className="font-bold text-lg">Dine-in mode active</h4>
+              <p className="text-sm text-dfc-yellow/80">Your order will be served directly to your table.</p>
+            </div>
+          </div>
+        )}
+
+        <div className="mb-12 text-center relative">
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-72 h-72 bg-dfc-red/20 blur-[100px] rounded-full pointer-events-none"></div>
+          <h1 className="font-display mb-4 text-5xl font-extrabold md:text-6xl lg:text-7xl text-white tracking-tight relative z-10 drop-shadow-xl">
+            Our <span className="text-transparent bg-clip-text bg-gradient-to-r from-dfc-red to-dfc-yellow">Menu</span>
+          </h1>
+          <p className="text-xl text-gray-400 font-light relative z-10">Fresh, crispy, and made to order just for you.</p>
+        </div>
+
+        <div className="mb-16 flex flex-col gap-4 md:flex-row md:items-center md:justify-between rounded-[2rem] bg-zinc-900/50 p-4 shadow-2xl border border-white/10 backdrop-blur-xl">
+          <div className="relative w-full md:max-w-md">
+            <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
+            <input
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search for burgers, buckets..."
+              className="w-full rounded-2xl bg-zinc-950 py-3.5 pl-12 pr-4 text-sm font-medium text-white placeholder-gray-500 transition-colors focus:bg-zinc-900 focus:outline-none focus:ring-2 focus:ring-dfc-red border border-white/5"
+            />
+          </div>
+          <div className="flex w-full flex-wrap gap-2 md:w-auto">
+            {[
+              { key: "veg", label: "Vegetarian", icon: <Leaf className="h-4 w-4" /> },
+              { key: "spicy", label: "Spicy", icon: <Flame className="h-4 w-4" /> },
+              { key: "popular", label: "Popular", icon: <Star className="h-4 w-4" /> },
+            ].map((f) => (
+              <button
+                key={f.key}
+                onClick={() => setFilter(filter === f.key ? null : f.key)}
+                className={cn(
+                  "flex items-center gap-2 rounded-full px-6 py-3 text-sm font-bold transition-all duration-300 border",
+                  filter === f.key 
+                    ? "bg-dfc-red text-white shadow-[0_0_15px_rgba(230,46,53,0.4)] border-dfc-red scale-105" 
+                    : "bg-zinc-950 text-gray-400 hover:bg-zinc-900 hover:text-white border-white/10"
+                )}
+              >
+                {f.icon}
+                {f.label}
+              </button>
+            ))}
           </div>
         </div>
-      )}
 
-      <div className="mb-10 text-center">
-        <h1 className="font-display mb-3 text-4xl font-extrabold md:text-5xl lg:text-6xl text-gray-900 tracking-tight">Our Menu</h1>
-        <p className="text-lg text-gray-500">Fresh, crispy, and made to order just for you.</p>
+        {isLoading ? (
+          <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+            {[1, 2, 3, 4, 5, 6].map((i) => (
+              <div key={i} className="h-[450px] animate-pulse rounded-[2rem] bg-zinc-900/50 border border-white/5" />
+            ))}
+          </div>
+        ) : (
+          data?.categories.map((cat) => (
+            <CategorySection 
+              key={cat.id} 
+              cat={cat} 
+              globalCustomizations={data.global_customizations} 
+              handleAdd={handleAdd} 
+            />
+          ))
+        )}
       </div>
-
-      <div className="mb-12 flex flex-col items-center gap-4 md:flex-row md:justify-between rounded-3xl bg-white p-4 shadow-lg shadow-gray-200/30 border border-gray-100">
-        <div className="relative w-full md:max-w-md">
-          <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
-          <input
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search for burgers, buckets..."
-            className="w-full rounded-2xl bg-gray-50 py-3 pl-12 pr-4 text-sm font-medium transition-colors focus:bg-white focus:outline-none focus:ring-2 focus:ring-dfc-yellow"
-          />
-        </div>
-        <div className="flex w-full flex-wrap gap-2 md:w-auto">
-          {[
-            { key: "veg", label: "Vegetarian", icon: <Leaf className="h-3.5 w-3.5" /> },
-            { key: "spicy", label: "Spicy", icon: <Flame className="h-3.5 w-3.5" /> },
-            { key: "popular", label: "Popular", icon: <Star className="h-3.5 w-3.5" /> },
-          ].map((f) => (
-            <button
-              key={f.key}
-              onClick={() => setFilter(filter === f.key ? null : f.key)}
-              className={cn(
-                "flex items-center gap-1.5 rounded-full px-5 py-2.5 text-sm font-bold transition-all duration-300",
-                filter === f.key 
-                  ? "bg-dfc-red text-white shadow-md shadow-dfc-red/20 scale-105" 
-                  : "bg-gray-50 text-gray-600 hover:bg-gray-100 border border-gray-200/60"
-              )}
-            >
-              {f.icon}
-              {f.label}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {isLoading ? (
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {[1, 2, 3, 4, 5, 6].map((i) => (
-            <div key={i} className="h-[400px] animate-pulse rounded-[2rem] bg-gray-100" />
-          ))}
-        </div>
-      ) : (
-        data?.categories.map((cat) => (
-          <section key={cat.id} id={cat.slug} className="mb-16">
-            <div className="mb-6 flex items-center gap-4">
-              <h2 className="font-display text-2xl font-extrabold text-gray-900 md:text-3xl">
-                {cat.name}
-              </h2>
-              <div className="h-px flex-1 bg-gradient-to-r from-gray-200 to-transparent" />
-            </div>
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {cat.items.map((item) => (
-                <ItemCard
-                  key={item.id}
-                  item={item}
-                  globalCustomizations={data.global_customizations}
-                  onAdd={handleAdd}
-                />
-              ))}
-            </div>
-          </section>
-        ))
-      )}
     </div>
   );
 }
