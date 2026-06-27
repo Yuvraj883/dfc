@@ -14,7 +14,7 @@ export default function CheckoutPage() {
   const [phone, setPhone] = useState("");
   const [promoInput, setPromoInput] = useState("");
   const [paymentMethod, setPaymentMethod] = useState<"stripe" | "pay_at_counter">("stripe");
-  const [loyaltyRedeem, setLoyaltyRedeem] = useState(0);
+  const [loyaltyRedeem] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 

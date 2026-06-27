@@ -1,14 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { api } from "@/lib/api";
 import { formatPrice } from "@/lib/utils";
 
 export default function AccountPage() {
-  const router = useRouter();
   const [mode, setMode] = useState<"login" | "signup">("login");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");

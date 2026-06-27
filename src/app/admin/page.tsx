@@ -28,13 +28,13 @@ function MenuManager() {
     setSaving(true);
     try {
       if (editingId === "NEW") {
-        await api.adminCreateMenuItem(editForm as any);
+        await api.adminCreateMenuItem(editForm as Parameters<typeof api.adminCreateMenuItem>[0]);
       } else if (editingId) {
         await api.adminUpdateMenuItem(editingId, editForm);
       }
       setEditingId(null);
       refetch();
-    } catch (err) {
+    } catch (_err) {
       alert("Failed to save menu item");
     } finally {
       setSaving(false);
@@ -48,7 +48,7 @@ function MenuManager() {
       await api.adminDeleteMenuItem(id);
       if (editingId === id) setEditingId(null);
       refetch();
-    } catch (err) {
+    } catch (_err) {
       alert("Failed to delete menu item");
     } finally {
       setSaving(false);
@@ -245,7 +245,7 @@ function StaffManager() {
       await api.adminCreateStaff(form);
       setForm({ name: "", email: "", password: "", role: "staff" });
       refetch();
-    } catch (err: any) {
+    } catch (_err) {
       alert("Failed to create staff account");
     } finally {
       setSaving(false);
@@ -258,7 +258,7 @@ function StaffManager() {
     try {
       await api.adminDeleteStaff(id);
       refetch();
-    } catch (err) {
+    } catch (_err) {
       alert("Failed to delete staff account");
     } finally {
       setSaving(false);
@@ -364,16 +364,16 @@ export default function AdminPage() {
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-8">
-      <div className="mb-8 flex flex-col sm:flex-row items-center justify-between border-b border-orange-100 pb-4 gap-4">
-        <h1 className="text-3xl font-bold">Admin Panel</h1>
-        <div className="flex gap-2">
+      <div className="mb-10 flex flex-col sm:flex-row items-center justify-between rounded-3xl bg-white p-4 shadow-sm border border-gray-100 gap-4">
+        <h1 className="font-display text-3xl font-extrabold text-gray-900 ml-4">Admin Panel</h1>
+        <div className="flex gap-2 rounded-2xl bg-gray-50 p-1 border border-gray-100">
           {["dashboard", "menu", "staff"].map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
               className={cn(
-                "rounded-full px-4 py-2 text-sm font-bold capitalize transition",
-                activeTab === tab ? "bg-dfc-red text-white" : "bg-orange-50 text-gray-700 hover:bg-orange-100"
+                "rounded-xl px-5 py-2 text-sm font-bold capitalize transition-all duration-300",
+                activeTab === tab ? "bg-white text-dfc-red shadow-sm border border-gray-200" : "text-gray-500 hover:text-gray-900 hover:bg-gray-100/50"
               )}
             >
               {tab}
@@ -384,31 +384,46 @@ export default function AdminPage() {
 
       {activeTab === "dashboard" && (
         <>
-          <div className="mb-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="mb-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {[
               { label: "Today's Orders", value: stats.today_orders },
               { label: "Revenue", value: formatPrice(stats.today_revenue) },
               { label: "Reservations", value: stats.today_reservations },
               { label: "Pending", value: stats.pending_orders },
             ].map((s) => (
-              <div key={s.label} className="rounded-xl bg-orange-50 p-4">
-                <p className="text-sm text-gray-600">{s.label}</p>
-                <p className="text-2xl font-bold text-dfc-red">{s.value}</p>
+              <div key={s.label} className="relative overflow-hidden rounded-3xl bg-white p-6 shadow-lg shadow-gray-200/40 border border-gray-100">
+                <div className="absolute -right-6 -top-6 h-24 w-24 rounded-full bg-orange-50 blur-2xl" />
+                <p className="relative z-10 text-sm font-bold tracking-wide text-gray-500 uppercase">{s.label}</p>
+                <p className="font-display relative z-10 mt-2 text-4xl font-extrabold text-dfc-red">{s.value}</p>
               </div>
             ))}
           </div>
 
-          <h2 className="mb-4 text-xl font-bold">Live Orders</h2>
-          <div className="mb-8 space-y-3">
+          <h2 className="font-display mb-6 text-2xl font-extrabold text-gray-900">Live Orders</h2>
+          <div className="mb-12 space-y-4">
             {orders?.map((o) => (
-              <div key={o.id} className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-orange-100 p-4">
-                <div>
-                  <p className="font-semibold">#{o.id.slice(0, 8)} · {o.order_type}</p>
-                  <p className="text-sm text-gray-500 capitalize">{o.status} · {formatPrice(o.total)}</p>
+              <div key={o.id} className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-gray-100 bg-white p-5 shadow-sm transition hover:shadow-md">
+                <div className="flex items-center gap-4">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-orange-50 font-bold text-dfc-red">
+                    {o.order_type === "dine_in" ? "🍽" : "🥡"}
+                  </div>
+                  <div>
+                    <p className="font-bold text-gray-900">Order #{o.id.slice(0, 6).toUpperCase()}</p>
+                    <p className="text-sm text-gray-500 font-medium capitalize">{o.status} · {formatPrice(o.total)}</p>
+                  </div>
                 </div>
                 <div className="flex gap-2">
                   {["preparing", "ready", "completed"].map((s) => (
-                    <button key={s} onClick={() => updateStatus(o.id, s)} className="rounded-lg bg-orange-100 px-3 py-1 text-xs font-medium capitalize hover:bg-orange-200">
+                    <button 
+                      key={s} 
+                      onClick={() => updateStatus(o.id, s)} 
+                      className={cn(
+                        "rounded-full px-4 py-1.5 text-xs font-bold capitalize transition-all",
+                        o.status === s 
+                          ? "bg-dfc-red text-white shadow-md shadow-dfc-red/20" 
+                          : "bg-gray-50 text-gray-600 hover:bg-gray-100 border border-gray-200/60"
+                      )}
+                    >
                       {s}
                     </button>
                   ))}
@@ -417,11 +432,11 @@ export default function AdminPage() {
             ))}
           </div>
 
-          <h2 className="mb-4 text-xl font-bold">Table QR Codes</h2>
+          <h2 className="font-display mb-6 text-2xl font-extrabold text-gray-900">Table QR Codes</h2>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {tables?.map((t) => (
-              <div key={t.id} className="flex flex-col items-center rounded-xl border border-orange-100 bg-white p-6 shadow-sm">
-                <h3 className="mb-4 text-lg font-bold text-gray-800">Table {t.table_number}</h3>
+              <div key={t.id} className="flex flex-col items-center rounded-3xl border border-gray-100 bg-white p-6 shadow-lg shadow-gray-200/40 transition hover:-translate-y-1 hover:shadow-xl hover:shadow-gray-200/60">
+                <h3 className="font-display mb-4 text-xl font-extrabold text-gray-900">Table {t.table_number}</h3>
                 {t.qr_url ? (
                   <>
                     <div className="mb-4 rounded-xl border-4 border-white shadow-sm ring-1 ring-gray-100 bg-white p-2">
