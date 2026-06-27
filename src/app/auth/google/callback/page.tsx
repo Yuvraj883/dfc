@@ -1,11 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 import { api } from "@/lib/api";
 
-export default function GoogleCallbackPage() {
+function GoogleCallbackContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const queryClient = useQueryClient();
@@ -52,5 +52,18 @@ export default function GoogleCallbackPage() {
       <div className="h-12 w-12 animate-spin rounded-full border-4 border-orange-200 border-t-dfc-red mb-4"></div>
       <p className="text-lg font-medium text-gray-600">Authenticating with Google...</p>
     </div>
+  );
+}
+
+export default function GoogleCallbackPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex min-h-[50vh] flex-col items-center justify-center p-4">
+        <div className="h-12 w-12 animate-spin rounded-full border-4 border-orange-200 border-t-dfc-red mb-4"></div>
+        <p className="text-lg font-medium text-gray-600">Loading...</p>
+      </div>
+    }>
+      <GoogleCallbackContent />
+    </Suspense>
   );
 }
