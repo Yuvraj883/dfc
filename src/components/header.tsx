@@ -25,9 +25,9 @@ export function Header() {
   const count = items.reduce((s, i) => s + i.quantity, 0);
 
   return (
-    <div className="px-4 pt-4">
-      <header className="sticky top-4 z-50 mx-auto max-w-6xl rounded-full border border-white/10 bg-zinc-950/70 backdrop-blur-xl shadow-2xl shadow-black/50 transition-all duration-300">
-        <div className="flex items-center justify-between px-6 py-3">
+    <div className="px-4 pt-4 sticky top-0 z-50">
+      <header className="mx-auto max-w-6xl rounded-full border border-white/10 bg-zinc-950/70 backdrop-blur-xl shadow-2xl shadow-black/50 transition-all duration-300">
+        <div className="flex items-center justify-between px-4 sm:px-6 py-3">
           <Logo />
           <nav className="hidden items-center gap-8 md:flex">
             {links.map((l) => (
@@ -63,7 +63,7 @@ export function Header() {
               )}
             </Link>
           </nav>
-          <button className="md:hidden rounded-full p-2 text-gray-300 hover:bg-white/10 transition" onClick={() => setOpen(!open)} aria-label="Toggle menu">
+          <button className="md:hidden rounded-full p-3 text-gray-300 hover:bg-white/10 transition active:scale-95" onClick={() => setOpen(!open)} aria-label="Toggle menu">
             {open ? <X /> : <MenuIcon />}
           </button>
         </div>

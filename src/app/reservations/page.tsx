@@ -69,7 +69,7 @@ export default function ReservationsPage() {
           
           <div>
             <label className="text-sm font-bold text-zinc-600 mb-2 block">Available Times</label>
-            <div className="grid grid-cols-4 gap-2">
+            <div className="grid grid-cols-3 sm:grid-cols-4 gap-2 sm:gap-3">
               {availability?.slots.filter((s) => s.available).map((slot) => (
                 <button
                   key={slot.time}

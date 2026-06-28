@@ -28,7 +28,7 @@ import { Toaster } from 'sonner';
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={`${outfit.variable} ${inter.variable} h-full`}>
-      <body className="font-sans flex min-h-full flex-col antialiased selection:bg-dfc-yellow selection:text-gray-900">
+      <body className="font-sans flex min-h-full flex-col antialiased selection:bg-dfc-yellow selection:text-gray-900 overflow-x-hidden">
         <Providers>
           <Header />
           <main className="flex-1">{children}</main>
