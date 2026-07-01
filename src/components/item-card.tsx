@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { Flame, Leaf, Star, Plus, Minus } from "lucide-react";
 import { toast } from "sonner";
 import { type MenuItem, type Customization } from "@/lib/api";
@@ -57,8 +58,13 @@ export function ItemCard({
     <div className="group relative flex flex-col overflow-hidden rounded-[2rem] border border-zinc-100 bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_20px_50px_rgb(0,0,0,0.08)] hover:border-zinc-200">
       <div className="relative flex h-56 items-center justify-center bg-zinc-50 overflow-hidden">
         {item.image_url ? (
-          /* eslint-disable-next-line @next/next/no-img-element */
-          <img src={item.image_url} alt={item.name} className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" />
+          <Image 
+            src={item.image_url} 
+            alt={item.name}
+            fill
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            className="object-cover transition-transform duration-700 group-hover:scale-105" 
+          />
         ) : (
           <span className="text-6xl transition-transform duration-500 group-hover:scale-110 drop-shadow-sm">
             {item.is_vegetarian ? "🥗" : "🍗"}

@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { api } from "@/lib/api";
-import { formatPrice } from "@/lib/utils";
 import { ItemCard } from "@/components/item-card";
 
 export default async function HomePage() {

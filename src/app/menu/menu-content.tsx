@@ -3,11 +3,10 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
-import { Flame, Leaf, Search, Star, Plus } from "lucide-react";
-import { toast } from "sonner";
+import { Flame, Leaf, Search, Star } from "lucide-react";
 import { useInView } from "react-intersection-observer";
-import { api, type MenuItem, type Customization, type MenuCategory } from "@/lib/api";
-import { formatPrice, cn } from "@/lib/utils";
+import { api, type Customization, type MenuCategory } from "@/lib/api";
+import { cn } from "@/lib/utils";
 import { useCart } from "@/store/cart";
 import { ItemCard } from "@/components/item-card";
 
@@ -60,7 +59,6 @@ export default function MenuPage() {
   const tableToken = searchParams.get("t");
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState<string | null>(null);
-  const addItem = useCart((s) => s.addItem);
   const setTableToken = useCart((s) => s.setTableToken);
 
   useEffect(() => {

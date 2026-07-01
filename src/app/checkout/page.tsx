@@ -70,11 +70,12 @@ export default function CheckoutPage() {
       clear();
       const tokenParam = order.guest_token ? `?token=${order.guest_token}` : "";
       router.push(`/orders/${order.id}${tokenParam}`);
-    } catch (e: any) {
-      if (e.name === 'AbortError' || e.message?.includes('AbortError')) {
+    } catch (e: unknown) {
+      const err = e as Error;
+      if (err.name === 'AbortError' || err.message?.includes('AbortError')) {
         setError("Request timed out. Please check your connection and try again.");
       } else {
-        setError(e instanceof Error ? e.message : "Order failed");
+        setError(err.message || "Order failed");
       }
     } finally {
       clearTimeout(timeoutId);

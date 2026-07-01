@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-html-link-for-pages */
 export function Logo({ className = "" }: { className?: string }) {
   return (
     <a 

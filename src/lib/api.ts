@@ -110,14 +110,16 @@ export interface DashboardStats {
   popular_items: { name: string; count: number }[];
 }
 
-async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
+async function request<T>(path: string, options: RequestInit = {}, isFormData: boolean = false): Promise<T> {
+  const headers: Record<string, string> = { ...options.headers as Record<string, string> };
+  if (!isFormData) {
+    headers["Content-Type"] = "application/json";
+  }
+
   const res = await fetch(`${API_URL}${path}`, {
     ...options,
     credentials: "include",
-    headers: {
-      "Content-Type": "application/json",
-      ...options.headers,
-    },
+    headers,
   });
   if (!res.ok) {
     const err = await res.json().catch(() => ({ detail: "Request failed" }));
@@ -212,4 +214,9 @@ export const api = {
     request<{ ok: boolean }>(`/api/admin/staff/${id}`, {
       method: "DELETE",
     }),
+  adminUploadImage: (formData: FormData) =>
+    request<{ url: string }>("/api/admin/upload", {
+      method: "POST",
+      body: formData,
+    }, true),
 };

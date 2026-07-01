@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { api } from "@/lib/api";
 
 export const metadata = {
   title: "About Us",

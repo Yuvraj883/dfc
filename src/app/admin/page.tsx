@@ -11,6 +11,26 @@ function MenuManager() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editForm, setEditForm] = useState<Partial<MenuItem> & { category_id?: string }>({});
   const [saving, setSaving] = useState(false);
+  const [uploadingImage, setUploadingImage] = useState(false);
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploadingImage(true);
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      
+      const data = await api.adminUploadImage(formData);
+      setEditForm(prev => ({ ...prev, image_url: data.url }));
+    } catch (err) {
+      alert("Failed to upload image");
+      console.error(err);
+    } finally {
+      setUploadingImage(false);
+    }
+  };
 
   if (isLoading) return <div>Loading menu...</div>;
 
@@ -34,7 +54,7 @@ function MenuManager() {
       }
       setEditingId(null);
       refetch();
-    } catch (_err) {
+    } catch {
       alert("Failed to save menu item");
     } finally {
       setSaving(false);
@@ -48,7 +68,7 @@ function MenuManager() {
       await api.adminDeleteMenuItem(id);
       if (editingId === id) setEditingId(null);
       refetch();
-    } catch (_err) {
+    } catch {
       alert("Failed to delete menu item");
     } finally {
       setSaving(false);
@@ -103,12 +123,40 @@ function MenuManager() {
                         </div>
                       </div>
                       <div>
-                        <label className="text-xs font-semibold text-gray-500">Image URL</label>
-                        <input
-                          className="w-full rounded border border-gray-200 px-2 py-1 text-sm"
-                          value={editForm.image_url || ""}
-                          onChange={(e) => setEditForm({ ...editForm, image_url: e.target.value })}
-                        />
+                        <label className="text-xs font-semibold text-gray-500">Image</label>
+                        {editForm.image_url ? (
+                          <div className="mt-1 mb-2 relative h-32 w-full rounded-xl overflow-hidden border border-gray-200">
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img src={editForm.image_url} alt="Preview" className="object-cover w-full h-full" />
+                            <button 
+                              onClick={() => setEditForm(prev => ({ ...prev, image_url: "" }))}
+                              className="absolute top-2 right-2 rounded-full bg-red-500 p-1 text-white hover:bg-red-600 transition-colors"
+                            >
+                              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                              </svg>
+                            </button>
+                          </div>
+                        ) : (
+                          <div className="mt-1 flex items-center gap-2">
+                            <input
+                              type="file"
+                              accept="image/*"
+                              onChange={handleImageUpload}
+                              disabled={uploadingImage}
+                              className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-orange-50 file:text-dfc-red hover:file:bg-orange-100 cursor-pointer disabled:opacity-50"
+                            />
+                            {uploadingImage && <span className="text-xs font-bold text-dfc-red animate-pulse">Uploading...</span>}
+                          </div>
+                        )}
+                        {!editForm.image_url && (
+                          <input
+                            placeholder="Or paste an image URL directly"
+                            className="mt-2 w-full rounded border border-gray-200 px-2 py-1 text-sm text-gray-500 placeholder-gray-400"
+                            value={editForm.image_url || ""}
+                            onChange={(e) => setEditForm({ ...editForm, image_url: e.target.value })}
+                          />
+                        )}
                       </div>
                       <div className="flex items-center justify-between mt-2">
                         <label className="flex items-center gap-2 text-sm text-gray-700">
@@ -191,14 +239,42 @@ function MenuManager() {
                      />
                    </div>
                  </div>
-                 <div>
-                   <label className="text-xs font-semibold text-gray-500">Image URL</label>
-                   <input
-                     className="w-full rounded border border-gray-200 px-2 py-1 text-sm"
-                     value={editForm.image_url || ""}
-                     onChange={(e) => setEditForm({ ...editForm, image_url: e.target.value })}
-                   />
-                 </div>
+                  <div>
+                    <label className="text-xs font-semibold text-gray-500">Image</label>
+                    {editForm.image_url ? (
+                      <div className="mt-1 mb-2 relative h-32 w-full rounded-xl overflow-hidden border border-gray-200">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src={editForm.image_url} alt="Preview" className="object-cover w-full h-full" />
+                        <button 
+                          onClick={() => setEditForm(prev => ({ ...prev, image_url: "" }))}
+                          className="absolute top-2 right-2 rounded-full bg-red-500 p-1 text-white hover:bg-red-600 transition-colors"
+                        >
+                          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                          </svg>
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="mt-1 flex items-center gap-2">
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={handleImageUpload}
+                          disabled={uploadingImage}
+                          className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-orange-50 file:text-dfc-red hover:file:bg-orange-100 cursor-pointer disabled:opacity-50"
+                        />
+                        {uploadingImage && <span className="text-xs font-bold text-dfc-red animate-pulse">Uploading...</span>}
+                      </div>
+                    )}
+                    {!editForm.image_url && (
+                      <input
+                        placeholder="Or paste an image URL directly"
+                        className="mt-2 w-full rounded border border-gray-200 px-2 py-1 text-sm text-gray-500 placeholder-gray-400"
+                        value={editForm.image_url || ""}
+                        onChange={(e) => setEditForm({ ...editForm, image_url: e.target.value })}
+                      />
+                    )}
+                  </div>
                  <div className="flex items-center justify-between mt-2">
                    <label className="flex items-center gap-2 text-sm text-gray-700">
                      <input
@@ -245,7 +321,7 @@ function StaffManager() {
       await api.adminCreateStaff(form);
       setForm({ name: "", email: "", password: "", role: "staff" });
       refetch();
-    } catch (_err) {
+    } catch {
       alert("Failed to create staff account");
     } finally {
       setSaving(false);
@@ -258,7 +334,7 @@ function StaffManager() {
     try {
       await api.adminDeleteStaff(id);
       refetch();
-    } catch (_err) {
+    } catch {
       alert("Failed to delete staff account");
     } finally {
       setSaving(false);

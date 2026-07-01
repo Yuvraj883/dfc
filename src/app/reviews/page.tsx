@@ -39,7 +39,7 @@ export default async function ReviewsPage() {
               >
                 {/* Decorative Quote Icon Background */}
                 <div className="absolute -top-4 -right-4 text-9xl text-white/5 font-serif leading-none pointer-events-none group-hover:text-dfc-red/10 transition-colors duration-500">
-                  "
+                  &quot;
                 </div>
 
                 <div className="relative z-10 flex flex-col h-full">

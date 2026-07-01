@@ -43,7 +43,7 @@ export default function AccountPage() {
     try {
       const { url } = await api.getGoogleLoginUrl();
       window.location.href = url;
-    } catch (e) {
+    } catch {
       setError("Google authentication is not configured yet.");
     }
   };
