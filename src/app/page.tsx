@@ -24,19 +24,19 @@ export default async function HomePage() {
           backgroundBlendMode: "overlay",
         }}
       >
-        <div className="absolute inset-0 bg-white/30 backdrop-blur-[2px]"></div>
+        <div className="absolute inset-0 bg-black/60 backdrop-blur-[2px]"></div>
         
         <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 w-full z-10 text-center">
           <div className="animate-in fade-in slide-in-from-bottom-8 duration-1000 ease-out fill-mode-both flex flex-col items-center">
-            <p className="mb-6 inline-block rounded-full bg-dfc-red/10 border border-dfc-red/20 px-5 py-2 text-[10px] sm:text-xs font-bold tracking-[0.2em] text-dfc-red uppercase shadow-sm">
+            <p className="mb-6 inline-block rounded-full bg-black/30 border border-white/20 px-5 py-2 text-[10px] sm:text-xs font-bold tracking-[0.2em] text-white uppercase shadow-lg backdrop-blur-md">
               {settings?.tagline || "THE CAPITAL OF CRISP."}
             </p>
-            <h1 className="font-display mb-8 max-w-4xl text-4xl font-extrabold leading-[1.1] sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl tracking-tight text-zinc-900 drop-shadow-sm">
+            <h1 className="font-display mb-8 max-w-4xl text-4xl font-extrabold leading-[1.1] sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl tracking-tight text-white drop-shadow-2xl">
               Delhi Fried <br className="hidden sm:block"/>
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-dfc-red to-dfc-red-dark">Chicken</span>
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-dfc-red to-dfc-yellow filter drop-shadow-lg">Chicken</span>
             </h1>
             
-            <p className="mb-10 max-w-2xl text-base sm:text-lg lg:text-xl text-zinc-600 leading-relaxed font-light px-2 sm:px-0">
+            <p className="mb-10 max-w-2xl text-base sm:text-lg lg:text-xl text-zinc-200 leading-relaxed font-medium px-2 sm:px-0 drop-shadow-xl">
               Crispy. Juicy. Unforgettable. Janakpuri&apos;s legendary destination for artisanal fried chicken, towering burgers, and epic buckets.
             </p>
             

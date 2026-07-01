@@ -20,6 +20,7 @@ export default function ReservationsPage() {
     queryKey: ["availability", date],
     queryFn: () => api.getAvailability(date),
     enabled: !!date,
+    staleTime: 60 * 1000, // Cache for 1 minute on the frontend
   });
 
   const submit = async () => {
