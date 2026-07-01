@@ -6,6 +6,7 @@ import { useCart } from "@/store/cart";
 import { formatPrice } from "@/lib/utils";
 import { triggerHaptic, playClickSound, playPopSound } from "@/lib/haptics";
 import { ScrollReveal } from "@/components/scroll-reveal";
+import { api } from "@/lib/api";
 
 export default function CheckoutPage() {
   const router = useRouter();
