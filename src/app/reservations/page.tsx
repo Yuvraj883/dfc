@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { api } from "@/lib/api";
 import { triggerHaptic, playClickSound, playPopSound } from "@/lib/haptics";
+import { ScrollReveal } from "@/components/scroll-reveal";
 
 export default function ReservationsPage() {
   const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
@@ -53,17 +54,17 @@ export default function ReservationsPage() {
 
   if (success) {
     return (
-      <div className="mx-auto max-w-lg px-4 py-32 text-center min-h-[70vh] flex flex-col items-center justify-center">
+      <ScrollReveal delay={0.1} direction="up" className="mx-auto max-w-lg px-4 py-32 text-center min-h-[70vh] flex flex-col items-center justify-center">
         <p className="text-6xl mb-6 drop-shadow-sm">🎉</p>
         <h1 className="text-4xl font-extrabold text-zinc-900 mb-4">Table Booked!</h1>
         <p className="text-lg text-zinc-600 font-light">Check your email for confirmation details.</p>
-      </div>
+      </ScrollReveal>
     );
   }
 
   return (
     <div className="min-h-screen bg-[#FAFAFA] pt-24 pb-32 text-zinc-900">
-      <div className="mx-auto max-w-lg px-4">
+      <ScrollReveal delay={0.1} direction="up" className="mx-auto max-w-lg px-4">
         <h1 className="mb-2 text-4xl font-extrabold tracking-tight">Book a Table</h1>
         <p className="mb-8 text-zinc-500 font-light text-lg">Reserve your spot at DFC Janakpuri.</p>
         
@@ -148,7 +149,7 @@ export default function ReservationsPage() {
               submit();
             }} 
             disabled={isPending} 
-            className="mt-6 w-full flex justify-center items-center gap-2 rounded-full bg-dfc-red py-4 font-bold text-lg text-white shadow-[0_10px_30px_-10px_rgba(230,46,53,0.6)] hover:bg-dfc-red-dark hover:shadow-[0_20px_50px_-10px_rgba(230,46,53,0.8)] transition-all hover:-translate-y-1 active:scale-[0.98] active:translate-y-0 disabled:opacity-70 disabled:hover:translate-y-0 disabled:shadow-none"
+            className="mt-6 w-full flex justify-center items-center gap-2 rounded-2xl bg-dfc-red py-4 font-bold text-lg text-white shadow-[0_10px_30px_-10px_rgba(230,46,53,0.6)] hover:bg-dfc-red-dark hover:shadow-[0_20px_50px_-10px_rgba(230,46,53,0.8)] transition-all hover:-translate-y-1 active:scale-[0.98] active:translate-y-0 disabled:opacity-70 disabled:hover:translate-y-0 disabled:shadow-none"
           >
             {isPending ? (
               <>
@@ -161,7 +162,7 @@ export default function ReservationsPage() {
             ) : "Confirm Reservation"}
           </button>
         </div>
-      </div>
+      </ScrollReveal>
     </div>
   );
 }

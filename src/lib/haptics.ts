@@ -1,11 +1,25 @@
 "use client";
 
+let sharedAudioContext: AudioContext | null = null;
+
+const getAudioContext = () => {
+  if (typeof window === 'undefined') return null;
+  if (!sharedAudioContext) {
+    try {
+      const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
+      if (AudioCtx) sharedAudioContext = new AudioCtx();
+    } catch (e) {}
+  }
+  if (sharedAudioContext && sharedAudioContext.state === 'suspended') {
+    sharedAudioContext.resume();
+  }
+  return sharedAudioContext;
+};
+
 export const playPopSound = () => {
-  if (typeof window === 'undefined') return;
+  const ctx = getAudioContext();
+  if (!ctx) return;
   try {
-    const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
-    if (!AudioContext) return;
-    const ctx = new AudioContext();
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
     osc.connect(gain);
@@ -22,11 +36,9 @@ export const playPopSound = () => {
 };
 
 export const playClickSound = () => {
-  if (typeof window === 'undefined') return;
+  const ctx = getAudioContext();
+  if (!ctx) return;
   try {
-    const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
-    if (!AudioContext) return;
-    const ctx = new AudioContext();
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
     osc.connect(gain);

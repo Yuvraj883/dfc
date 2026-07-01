@@ -3,9 +3,9 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useCart } from "@/store/cart";
-import { api } from "@/lib/api";
 import { formatPrice } from "@/lib/utils";
 import { triggerHaptic, playClickSound, playPopSound } from "@/lib/haptics";
+import { ScrollReveal } from "@/components/scroll-reveal";
 
 export default function CheckoutPage() {
   const router = useRouter();
@@ -97,9 +97,9 @@ export default function CheckoutPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#FAFAFA] pt-24 pb-32 text-zinc-900">
-      <div className="mx-auto max-w-lg px-4">
-        <h1 className="mb-8 text-4xl font-extrabold tracking-tight">Checkout</h1>
+    <div className="min-h-screen bg-[#FAFAFA] pt-24 pb-32">
+      <ScrollReveal delay={0.1} direction="up" className="mx-auto max-w-lg px-4">
+        <h1 className="mb-8 text-4xl font-extrabold tracking-tight text-zinc-900">Checkout</h1>
         <div className="space-y-5 rounded-[2.5rem] border border-zinc-100 bg-white p-8 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.05)]">
           <div>
             <label className="text-sm font-bold text-zinc-600 mb-1 block">Full Name</label>
@@ -180,15 +180,15 @@ export default function CheckoutPage() {
           
           {error && <p className="text-sm font-medium text-dfc-red text-center mt-2">{error}</p>}
           
-          <button
-            onClick={placeOrder}
-            disabled={loading}
-            className="mt-6 w-full rounded-full bg-dfc-red py-4 font-bold text-lg text-white shadow-[0_10px_30px_-10px_rgba(230,46,53,0.6)] hover:bg-dfc-red-dark hover:shadow-[0_20px_50px_-10px_rgba(230,46,53,0.8)] transition-all hover:-translate-y-1 active:scale-[0.98] active:translate-y-0 disabled:opacity-70 disabled:hover:translate-y-0 disabled:shadow-none"
+          <button 
+            onClick={placeOrder} 
+            disabled={loading || !isFormValid()} 
+            className="mt-6 flex w-full items-center justify-center gap-2 rounded-2xl bg-dfc-red py-4 text-sm font-bold text-white shadow-[0_10px_30px_-10px_rgba(230,46,53,0.6)] transition-all hover:bg-dfc-red-dark hover:shadow-[0_20px_50px_-10px_rgba(230,46,53,0.8)] hover:-translate-y-1 active:scale-[0.98] active:translate-y-0 disabled:opacity-50 disabled:hover:translate-y-0 disabled:shadow-none"
           >
             {loading ? "Processing..." : "Place Order"}
           </button>
         </div>
-      </div>
+      </ScrollReveal>
     </div>
   );
 }

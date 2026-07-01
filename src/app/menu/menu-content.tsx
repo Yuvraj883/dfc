@@ -9,7 +9,9 @@ import { api, type Customization, type MenuCategory } from "@/lib/api";
 import { cn } from "@/lib/utils";
 import { useCart } from "@/store/cart";
 import { ItemCard } from "@/components/item-card";
+import { ItemCarousel } from "@/components/item-carousel";
 import { triggerHaptic, playClickSound } from "@/lib/haptics";
+import { ScrollReveal } from "@/components/scroll-reveal";
 
 
 
@@ -27,23 +29,20 @@ function CategorySection({
 
   return (
     <section ref={ref} id={cat.slug} className="mb-20 scroll-mt-32">
-      <div className="mb-8 flex items-center gap-4">
+      <ScrollReveal delay={0.1} direction="up" className="mb-8 flex items-center gap-4">
         <h2 className="font-display text-3xl font-extrabold text-zinc-900 md:text-4xl">
           {cat.name}
         </h2>
         <div className="h-px flex-1 bg-gradient-to-r from-zinc-200 to-transparent" />
-      </div>
+      </ScrollReveal>
       
       {inView ? (
-        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-          {cat.items.map((item) => (
-            <ItemCard
-              key={item.id}
-              item={item}
-              globalCustomizations={globalCustomizations}
-            />
-          ))}
-        </div>
+        <ScrollReveal delay={0.2} direction="up" className="relative z-10 w-full">
+          <ItemCarousel 
+            items={cat.items} 
+            globalCustomizations={globalCustomizations} 
+          />
+        </ScrollReveal>
       ) : (
         <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
           {[1, 2, 3].map(i => (
@@ -95,12 +94,13 @@ export default function MenuPage() {
           </div>
         )}
 
-        <div className="mb-12 text-center relative">
+        <ScrollReveal delay={0.1} direction="up" className="mb-12 text-center relative">
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-dfc-red/5 rounded-full blur-3xl pointer-events-none" />
           <h1 className="font-display mb-4 text-5xl font-extrabold md:text-6xl lg:text-7xl text-zinc-900 tracking-tight relative z-10">
             Our <span className="text-transparent bg-clip-text bg-gradient-to-r from-dfc-red to-dfc-red-dark">Menu</span>
           </h1>
           <p className="text-xl text-zinc-500 font-light relative z-10">Fresh, crispy, and made to order just for you.</p>
-        </div>
+        </ScrollReveal>
 
         <div className="mb-16 sticky top-24 z-30 flex flex-col gap-4 md:flex-row md:items-center md:justify-between rounded-[2rem] bg-white/80 p-4 shadow-lg shadow-zinc-200/50 border border-zinc-100 backdrop-blur-xl">
           <div className="relative w-full md:max-w-md">

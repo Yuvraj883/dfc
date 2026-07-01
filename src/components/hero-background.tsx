@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 
 export function HeroBackground() {
   const [scrollY, setScrollY] = useState(0);
@@ -14,6 +14,18 @@ export function HeroBackground() {
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  const particles = useMemo(() => {
+    if (!mounted) return [];
+    return [...Array(15)].map((_, i) => ({
+      id: i,
+      size: Math.random() * 6 + 2,
+      left: Math.random() * 100,
+      duration: Math.random() * 10 + 10,
+      delay: Math.random() * -20,
+      color: Math.random() > 0.5 ? 'bg-dfc-red' : 'bg-dfc-yellow'
+    }));
+  }, [mounted]);
 
   return (
     <>
@@ -32,28 +44,20 @@ export function HeroBackground() {
       {/* Floating dynamic particles (like embers/spices) */}
       {mounted && (
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          {[...Array(15)].map((_, i) => {
-            const size = Math.random() * 6 + 2; // 2px to 8px
-            const left = Math.random() * 100; // 0% to 100%
-            const duration = Math.random() * 10 + 10; // 10s to 20s
-            const delay = Math.random() * -20; // Random start time
-            const color = Math.random() > 0.5 ? 'bg-dfc-red' : 'bg-dfc-yellow';
-            
-            return (
-              <div
-                key={i}
-                className={`absolute rounded-full ${color} opacity-40 blur-[1px]`}
-                style={{
-                  width: `${size}px`,
-                  height: `${size}px`,
-                  left: `${left}%`,
-                  bottom: '-20px',
-                  animation: `floatUp ${duration}s linear infinite`,
-                  animationDelay: `${delay}s`,
-                }}
-              />
-            );
-          })}
+          {particles.map((p) => (
+            <div
+              key={p.id}
+              className={`absolute rounded-full ${p.color} opacity-40 blur-[1px]`}
+              style={{
+                width: `${p.size}px`,
+                height: `${p.size}px`,
+                left: `${p.left}%`,
+                bottom: '-20px',
+                animation: `floatUp ${p.duration}s linear infinite`,
+                animationDelay: `${p.delay}s`,
+              }}
+            />
+          ))}
         </div>
       )}
 

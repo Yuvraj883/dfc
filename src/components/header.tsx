@@ -2,10 +2,11 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ShoppingBag, Menu as MenuIcon, X } from "lucide-react";
 import { useState } from "react";
+import { Menu as MenuIcon, X, ShoppingBag, User } from "lucide-react";
 import { Logo } from "./logo";
 import { useCart } from "@/store/cart";
+import { triggerHaptic, playClickSound } from "@/lib/haptics";
 import { cn } from "@/lib/utils";
 
 const links = [
@@ -34,6 +35,10 @@ export function Header() {
               <Link
                 key={l.href}
                 href={l.href}
+                onClick={() => {
+                  triggerHaptic('light');
+                  playClickSound();
+                }}
                 className={cn(
                   "relative text-sm font-medium transition-colors duration-200 hover:text-white group",
                   pathname === l.href ? "text-white font-semibold" : "text-gray-400"
@@ -46,13 +51,24 @@ export function Header() {
                 )} />
               </Link>
             ))}
-            <Link href="/account" className="relative text-sm font-medium text-gray-400 transition hover:text-white group">
+            <Link 
+              href="/account" 
+              onClick={() => {
+                triggerHaptic('light');
+                playClickSound();
+              }}
+              className="relative text-sm font-medium text-gray-400 transition hover:text-white group"
+            >
               Account
               <span className="absolute -bottom-1 left-0 h-0.5 w-0 bg-dfc-red transition-all duration-300 rounded-full group-hover:w-full" />
             </Link>
-            <Link
-              href="/cart"
-              className="relative flex items-center gap-1.5 rounded-full bg-dfc-red px-5 py-2 text-sm font-bold text-white shadow-lg shadow-dfc-red/20 transition-all hover:-translate-y-0.5 hover:bg-dfc-red-dark hover:shadow-xl hover:shadow-dfc-red/40"
+            <Link 
+              href="/cart" 
+              onClick={() => {
+                triggerHaptic('light');
+                playClickSound();
+              }}
+              className="relative flex items-center gap-2 rounded-full bg-dfc-red px-5 py-2 text-sm font-bold text-white transition-all duration-300 hover:bg-dfc-red-dark hover:shadow-[0_0_15px_rgba(230,46,53,0.5)] active:scale-95"
             >
               <ShoppingBag className="h-4 w-4" />
               Cart
@@ -63,7 +79,15 @@ export function Header() {
               )}
             </Link>
           </nav>
-          <button className="md:hidden rounded-full p-3 text-gray-300 hover:bg-white/10 transition active:scale-95" onClick={() => setOpen(!open)} aria-label="Toggle menu">
+          <button 
+            className="md:hidden rounded-full p-3 text-gray-300 hover:bg-white/10 transition active:scale-95" 
+            onClick={() => {
+              triggerHaptic('light');
+              playClickSound();
+              setOpen(!open);
+            }} 
+            aria-label="Toggle menu"
+          >
             {open ? <X /> : <MenuIcon />}
           </button>
         </div>
@@ -75,16 +99,36 @@ export function Header() {
                   key={l.href}
                   href={l.href}
                   className="rounded-lg px-4 py-3 text-sm font-medium text-gray-300 hover:bg-white/5 hover:text-white transition-colors"
-                  onClick={() => setOpen(false)}
+                  onClick={() => {
+                    triggerHaptic('light');
+                    playClickSound();
+                    setOpen(false);
+                  }}
                 >
                   {l.label}
                 </Link>
               ))}
               <div className="my-2 h-px w-full bg-white/10" />
-              <Link href="/account" className="rounded-lg px-4 py-3 text-sm font-medium text-gray-300 hover:bg-white/5 hover:text-white transition-colors" onClick={() => setOpen(false)}>
+              <Link 
+                href="/account" 
+                className="rounded-lg px-4 py-3 text-sm font-medium text-gray-300 hover:bg-white/5 hover:text-white transition-colors" 
+                onClick={() => {
+                  triggerHaptic('light');
+                  playClickSound();
+                  setOpen(false);
+                }}
+              >
                 Account
               </Link>
-              <Link href="/cart" className="rounded-lg px-4 py-3 text-sm font-semibold text-dfc-red hover:bg-white/5 transition-colors" onClick={() => setOpen(false)}>
+              <Link 
+                href="/cart" 
+                className="rounded-lg px-4 py-3 text-sm font-semibold text-dfc-red hover:bg-white/5 transition-colors" 
+                onClick={() => {
+                  triggerHaptic('light');
+                  playClickSound();
+                  setOpen(false);
+                }}
+              >
                 Cart ({count})
               </Link>
             </nav>
