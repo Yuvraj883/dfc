@@ -24,7 +24,7 @@ export default async function HomePage() {
           backgroundBlendMode: "overlay",
         }}
       >
-        <div className="absolute inset-0 bg-white/60 backdrop-blur-[2px]"></div>
+        <div className="absolute inset-0 bg-white/30 backdrop-blur-[2px]"></div>
         
         <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 w-full z-10 text-center">
           <div className="animate-in fade-in slide-in-from-bottom-8 duration-1000 ease-out fill-mode-both flex flex-col items-center">
