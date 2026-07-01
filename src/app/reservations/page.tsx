@@ -14,6 +14,7 @@ export default function ReservationsPage() {
   const [requests, setRequests] = useState("");
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
+  const [isPending, setIsPending] = useState(false);
 
   const { data: availability } = useQuery({
     queryKey: ["availability", date],
@@ -23,6 +24,13 @@ export default function ReservationsPage() {
 
   const submit = async () => {
     setError("");
+    
+    if (!date || !selectedTime || !name || !email || !phone) {
+      setError("Please fill out all required fields and select a time slot.");
+      return;
+    }
+    
+    setIsPending(true);
     try {
       await api.createReservation({
         name,
@@ -36,6 +44,8 @@ export default function ReservationsPage() {
       setSuccess(true);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Booking failed");
+    } finally {
+      setIsPending(false);
     }
   };
 
@@ -70,21 +80,31 @@ export default function ReservationsPage() {
           <div>
             <label className="text-sm font-bold text-zinc-600 mb-2 block">Available Times</label>
             <div className="grid grid-cols-3 sm:grid-cols-4 gap-2 sm:gap-3">
-              {availability?.slots.filter((s) => s.available).map((slot) => (
-                <button
-                  key={slot.time}
-                  onClick={() => setSelectedTime(slot.time)}
-                  className={`rounded-2xl py-3 text-sm font-bold transition-all duration-200 border-2 active:scale-95 ${selectedTime === slot.time ? "bg-dfc-red text-white border-dfc-red shadow-[0_5px_15px_-5px_rgba(230,46,53,0.4)]" : "bg-white text-zinc-600 border-zinc-200 hover:border-zinc-300 hover:bg-zinc-50"}`}
-                >
-                  {slot.time}
-                </button>
-              ))}
+              {availability?.slots.map((slot) => {
+                const isSelected = selectedTime === slot.time;
+                return (
+                  <button
+                    key={slot.time}
+                    onClick={() => slot.available && setSelectedTime(slot.time)}
+                    disabled={!slot.available}
+                    className={`rounded-2xl py-3 text-sm font-bold transition-all duration-200 border-2 ${
+                      !slot.available 
+                        ? "bg-zinc-100 text-zinc-400 border-zinc-200 cursor-not-allowed opacity-60"
+                        : isSelected 
+                          ? "bg-dfc-red text-white border-dfc-red shadow-[0_5px_15px_-5px_rgba(230,46,53,0.4)] active:scale-95" 
+                          : "bg-white text-zinc-600 border-zinc-200 hover:border-zinc-300 hover:bg-zinc-50 active:scale-95"
+                    }`}
+                  >
+                    {slot.time} {!slot.available && <span className="block text-[10px] font-medium uppercase mt-0.5">Full</span>}
+                  </button>
+                );
+              })}
               {!availability && (
                 <div className="col-span-4 py-4 text-center text-sm text-zinc-400 font-medium">
                   Loading slots...
                 </div>
               )}
-              {availability && availability.slots.filter(s => s.available).length === 0 && (
+              {availability && availability.slots.length === 0 && (
                 <div className="col-span-4 py-4 text-center text-sm text-red-500 font-medium bg-red-50 rounded-xl border border-red-100">
                   No tables available on this date.
                 </div>
@@ -115,10 +135,18 @@ export default function ReservationsPage() {
           
           <button 
             onClick={submit} 
-            disabled={!selectedTime || !name || !email || !phone} 
-            className="mt-6 w-full rounded-full bg-dfc-red py-4 font-bold text-lg text-white shadow-[0_10px_30px_-10px_rgba(230,46,53,0.6)] hover:bg-dfc-red-dark hover:shadow-[0_20px_50px_-10px_rgba(230,46,53,0.8)] transition-all hover:-translate-y-1 active:scale-[0.98] active:translate-y-0 disabled:opacity-70 disabled:hover:translate-y-0 disabled:shadow-none"
+            disabled={isPending} 
+            className="mt-6 w-full flex justify-center items-center gap-2 rounded-full bg-dfc-red py-4 font-bold text-lg text-white shadow-[0_10px_30px_-10px_rgba(230,46,53,0.6)] hover:bg-dfc-red-dark hover:shadow-[0_20px_50px_-10px_rgba(230,46,53,0.8)] transition-all hover:-translate-y-1 active:scale-[0.98] active:translate-y-0 disabled:opacity-70 disabled:hover:translate-y-0 disabled:shadow-none"
           >
-            Confirm Reservation
+            {isPending ? (
+              <>
+                <svg className="animate-spin -ml-1 mr-2 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Confirming...
+              </>
+            ) : "Confirm Reservation"}
           </button>
         </div>
       </div>
