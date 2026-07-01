@@ -25,7 +25,7 @@ export function Header() {
   const count = items.reduce((s, i) => s + i.quantity, 0);
 
   return (
-    <div className="px-4 pt-4 sticky top-0 z-50">
+    <div className="fixed top-0 w-full px-4 pt-4 z-50">
       <header className="mx-auto max-w-6xl rounded-full border border-white/10 bg-zinc-950/70 backdrop-blur-xl shadow-2xl shadow-black/50 transition-all duration-300">
         <div className="flex items-center justify-between px-4 sm:px-6 py-3">
           <Logo />
