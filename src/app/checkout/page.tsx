@@ -89,6 +89,10 @@ export default function CheckoutPage() {
     }
   };
 
+  const isFormValid = () => {
+    return name.trim().length > 0 && email.trim().length > 0 && phone.trim().length > 0;
+  };
+
   if (items.length === 0) {
     return (
       <div className="mx-auto max-w-lg px-4 py-32 text-center min-h-[70vh] flex items-center justify-center">
