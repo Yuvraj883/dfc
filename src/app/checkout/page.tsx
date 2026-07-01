@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useCart } from "@/store/cart";
 import { api } from "@/lib/api";
 import { formatPrice } from "@/lib/utils";
+import { triggerHaptic, playClickSound, playPopSound } from "@/lib/haptics";
 
 export default function CheckoutPage() {
   const router = useRouter();
@@ -23,6 +24,8 @@ export default function CheckoutPage() {
   const total = sub - promoDiscount - loyaltyRedeem + tax;
 
   const applyPromo = async () => {
+    triggerHaptic('light');
+    playClickSound();
     try {
       const res = await api.validatePromo(promoInput, sub);
       if (res.valid) setPromo(promoInput.toUpperCase(), res.discount);
@@ -33,6 +36,8 @@ export default function CheckoutPage() {
   };
 
   const placeOrder = async () => {
+    triggerHaptic('heavy');
+    playPopSound();
     setLoading(true);
     setError("");
     
@@ -144,13 +149,21 @@ export default function CheckoutPage() {
             <label className="text-sm font-bold text-zinc-600 mb-2 block">Payment Method</label>
             <div className="flex gap-3">
               <button
-                onClick={() => setPaymentMethod("stripe")}
+                onClick={() => {
+                  triggerHaptic('light');
+                  playClickSound();
+                  setPaymentMethod("stripe");
+                }}
                 className={`flex-1 rounded-2xl border-2 py-3.5 text-sm font-bold transition-all active:scale-95 ${paymentMethod === "stripe" ? "border-dfc-red bg-red-50 text-dfc-red shadow-[0_5px_15px_-5px_rgba(230,46,53,0.3)]" : "border-zinc-100 bg-zinc-50 text-zinc-500 hover:border-zinc-200 hover:bg-zinc-100"}`}
               >
                 Pay Online
               </button>
               <button
-                onClick={() => setPaymentMethod("pay_at_counter")}
+                onClick={() => {
+                  triggerHaptic('light');
+                  playClickSound();
+                  setPaymentMethod("pay_at_counter");
+                }}
                 className={`flex-1 rounded-2xl border-2 py-3.5 text-sm font-bold transition-all active:scale-95 ${paymentMethod === "pay_at_counter" ? "border-dfc-red bg-red-50 text-dfc-red shadow-[0_5px_15px_-5px_rgba(230,46,53,0.3)]" : "border-zinc-100 bg-zinc-50 text-zinc-500 hover:border-zinc-200 hover:bg-zinc-100"}`}
               >
                 Pay at Counter

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { api } from "@/lib/api";
+import { triggerHaptic, playClickSound, playPopSound } from "@/lib/haptics";
 
 export default function ReservationsPage() {
   const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
@@ -86,7 +87,13 @@ export default function ReservationsPage() {
                 return (
                   <button
                     key={slot.time}
-                    onClick={() => slot.available && setSelectedTime(slot.time)}
+                    onClick={() => {
+                      if (slot.available) {
+                        triggerHaptic('light');
+                        playClickSound();
+                        setSelectedTime(slot.time);
+                      }
+                    }}
                     disabled={!slot.available}
                     className={`rounded-2xl py-3 text-sm font-bold transition-all duration-200 border-2 ${
                       !slot.available 
@@ -135,7 +142,11 @@ export default function ReservationsPage() {
           {error && <p className="text-sm font-medium text-dfc-red text-center mt-2">{error}</p>}
           
           <button 
-            onClick={submit} 
+            onClick={() => {
+              triggerHaptic('heavy');
+              playPopSound();
+              submit();
+            }} 
             disabled={isPending} 
             className="mt-6 w-full flex justify-center items-center gap-2 rounded-full bg-dfc-red py-4 font-bold text-lg text-white shadow-[0_10px_30px_-10px_rgba(230,46,53,0.6)] hover:bg-dfc-red-dark hover:shadow-[0_20px_50px_-10px_rgba(230,46,53,0.8)] transition-all hover:-translate-y-1 active:scale-[0.98] active:translate-y-0 disabled:opacity-70 disabled:hover:translate-y-0 disabled:shadow-none"
           >

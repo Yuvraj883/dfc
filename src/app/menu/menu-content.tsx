@@ -9,6 +9,7 @@ import { api, type Customization, type MenuCategory } from "@/lib/api";
 import { cn } from "@/lib/utils";
 import { useCart } from "@/store/cart";
 import { ItemCard } from "@/components/item-card";
+import { triggerHaptic, playClickSound } from "@/lib/haptics";
 
 
 
@@ -119,7 +120,11 @@ export default function MenuPage() {
             ].map((f) => (
               <button
                 key={f.key}
-                onClick={() => setFilter(filter === f.key ? null : f.key)}
+                onClick={() => {
+                  triggerHaptic('light');
+                  playClickSound();
+                  setFilter(filter === f.key ? null : f.key);
+                }}
                 className={cn(
                   "flex items-center gap-2 rounded-full px-6 py-3 text-sm font-bold transition-all duration-300 border active:scale-95",
                   filter === f.key 

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Minus, Plus, Trash2 } from "lucide-react";
 import { useCart } from "@/store/cart";
 import { formatPrice } from "@/lib/utils";
+import { triggerHaptic, playClickSound, playPopSound } from "@/lib/haptics";
 
 export default function CartPage() {
   const { items, updateQuantity, removeItem, subtotal, promoDiscount, orderType, tableToken } = useCart();
@@ -53,7 +54,11 @@ export default function CartPage() {
                   </p>
                 </div>
                 <button
-                  onClick={() => removeItem(item.menuItemId, item.customizationIds)}
+                  onClick={() => {
+                    triggerHaptic('heavy');
+                    playClickSound();
+                    removeItem(item.menuItemId, item.customizationIds);
+                  }}
                   className="sm:hidden rounded-full p-2 -mr-2 -mt-2 text-zinc-400 hover:bg-red-50 hover:text-dfc-red transition-all active:scale-90"
                 >
                   <Trash2 className="h-5 w-5" />
@@ -62,21 +67,33 @@ export default function CartPage() {
               <div className="flex items-center justify-between w-full sm:w-auto mt-1 sm:mt-0">
                 <div className="flex items-center gap-3 bg-zinc-50 rounded-full border border-zinc-200 p-1">
                   <button
-                    onClick={() => updateQuantity(item.menuItemId, item.customizationIds, item.quantity - 1)}
+                    onClick={() => {
+                      triggerHaptic('light');
+                      playClickSound();
+                      updateQuantity(item.menuItemId, item.customizationIds, item.quantity - 1);
+                    }}
                     className="flex h-11 w-11 items-center justify-center rounded-full hover:bg-zinc-200 text-zinc-500 transition-all active:scale-90"
                   >
                     <Minus className="h-4 w-4" />
                   </button>
                   <span className="w-6 text-center font-semibold text-zinc-900">{item.quantity}</span>
                   <button
-                    onClick={() => updateQuantity(item.menuItemId, item.customizationIds, item.quantity + 1)}
+                    onClick={() => {
+                      triggerHaptic('medium');
+                      playPopSound();
+                      updateQuantity(item.menuItemId, item.customizationIds, item.quantity + 1);
+                    }}
                     className="flex h-11 w-11 items-center justify-center rounded-full hover:bg-zinc-200 text-zinc-500 transition-all active:scale-90"
                   >
                     <Plus className="h-4 w-4" />
                   </button>
                 </div>
                 <button
-                  onClick={() => removeItem(item.menuItemId, item.customizationIds)}
+                  onClick={() => {
+                    triggerHaptic('heavy');
+                    playClickSound();
+                    removeItem(item.menuItemId, item.customizationIds);
+                  }}
                   className="hidden sm:block ml-2 rounded-full p-3 text-zinc-400 hover:bg-red-50 hover:text-dfc-red transition-all active:scale-90"
                 >
                   <Trash2 className="h-5 w-5" />
