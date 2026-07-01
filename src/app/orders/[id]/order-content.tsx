@@ -28,7 +28,7 @@ export default function OrderStatusPage() {
   const currentIdx = STATUS_STEPS.indexOf(order.status);
 
   return (
-    <div className="mx-auto max-w-lg px-4 py-8">
+    <div className="mx-auto max-w-lg px-4 pt-32 pb-16">
       <div className="mb-6 text-center">
         <p className="text-5xl mb-2">✅</p>
         <h1 className="text-2xl font-bold">Order Confirmed!</h1>

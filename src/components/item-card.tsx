@@ -1,4 +1,5 @@
 "use client";
+// Force HMR rebuild to clear stale SSR cache
 
 import { useState } from "react";
 import Image from "next/image";
@@ -7,6 +8,56 @@ import { toast } from "sonner";
 import { type MenuItem, type Customization } from "@/lib/api";
 import { formatPrice, cn } from "@/lib/utils";
 import { useCart } from "@/store/cart";
+
+const playPopSound = () => {
+  if (typeof window === 'undefined') return;
+  try {
+    const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
+    if (!AudioContext) return;
+    const ctx = new AudioContext();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(800, ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(100, ctx.currentTime + 0.1);
+    gain.gain.setValueAtTime(0, ctx.currentTime);
+    gain.gain.linearRampToValueAtTime(0.3, ctx.currentTime + 0.01);
+    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.1);
+    osc.start(ctx.currentTime);
+    osc.stop(ctx.currentTime + 0.1);
+  } catch (e) {}
+};
+
+const playClickSound = () => {
+  if (typeof window === 'undefined') return;
+  try {
+    const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
+    if (!AudioContext) return;
+    const ctx = new AudioContext();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(1200, ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(400, ctx.currentTime + 0.05);
+    gain.gain.setValueAtTime(0, ctx.currentTime);
+    gain.gain.linearRampToValueAtTime(0.1, ctx.currentTime + 0.01);
+    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.05);
+    osc.start(ctx.currentTime);
+    osc.stop(ctx.currentTime + 0.05);
+  } catch (e) {}
+};
+
+const triggerHaptic = (style: 'light' | 'medium' | 'heavy' = 'medium') => {
+  if (typeof window !== 'undefined' && navigator.vibrate) {
+    if (style === 'light') navigator.vibrate(20);
+    else if (style === 'medium') navigator.vibrate(40);
+    else navigator.vibrate([40, 30, 40]);
+  }
+};
 
 export function ItemCard({
   item,
@@ -25,8 +76,11 @@ export function ItemCard({
     .filter((c) => selected.includes(c.id))
     .reduce((s, c) => s + c.extra_price, 0);
 
-  const toggle = (id: string) =>
+  const toggle = (id: string) => {
+    triggerHaptic('light');
+    playClickSound();
     setSelected((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
+  };
 
   const cartItem = items.find((i) => {
     if (i.menuItemId !== item.id) return false;
@@ -39,6 +93,9 @@ export function ItemCard({
   const quantityInCart = cartItem?.quantity || 0;
 
   const handleAdd = () => {
+    triggerHaptic('heavy');
+    playPopSound();
+    
     const all = [...item.customizations, ...globalCustomizations];
     const labels = all.filter((c) => selected.includes(c.id)).map((c) => c.name);
     
@@ -123,6 +180,8 @@ export function ItemCard({
           <div className="mt-auto flex w-full items-center justify-between rounded-full bg-zinc-50 border border-zinc-200 p-1 shadow-sm">
             <button
               onClick={() => {
+                triggerHaptic('light');
+                playClickSound();
                 if (quantityInCart === 1) {
                   removeItem(item.id, selected);
                 } else {
@@ -135,7 +194,11 @@ export function ItemCard({
             </button>
             <span className="w-8 text-center font-bold text-zinc-900">{quantityInCart}</span>
             <button
-              onClick={() => updateQuantity(item.id, selected, quantityInCart + 1)}
+              onClick={() => {
+                triggerHaptic('medium');
+                playPopSound();
+                updateQuantity(item.id, selected, quantityInCart + 1);
+              }}
               className="flex h-11 w-11 items-center justify-center rounded-full hover:bg-zinc-200 text-zinc-500 transition-all active:scale-90"
             >
               <Plus className="h-5 w-5" />

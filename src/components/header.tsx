@@ -25,8 +25,8 @@ export function Header() {
   const count = items.reduce((s, i) => s + i.quantity, 0);
 
   return (
-    <div className="fixed top-0 w-full px-4 pt-4 z-50">
-      <header className="mx-auto max-w-6xl rounded-full border border-white/10 bg-zinc-950/70 backdrop-blur-xl shadow-2xl shadow-black/50 transition-all duration-300">
+    <div className="fixed top-0 w-full px-4 pt-4 pb-4 z-50 bg-gradient-to-b from-zinc-950/50 to-transparent pointer-events-none">
+      <header className="relative mx-auto max-w-6xl rounded-full border border-white/10 bg-zinc-950/70 backdrop-blur-xl shadow-2xl shadow-black/50 transition-all duration-300 pointer-events-auto">
         <div className="flex items-center justify-between px-4 sm:px-6 py-3">
           <Logo />
           <nav className="hidden items-center gap-8 md:flex">

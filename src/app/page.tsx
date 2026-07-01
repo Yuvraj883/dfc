@@ -1,6 +1,9 @@
 import Link from "next/link";
 import { api } from "@/lib/api";
 import { ItemCard } from "@/components/item-card";
+import { ItemCarousel } from "@/components/item-carousel";
+import { HeroBackground } from "@/components/hero-background";
+import { ScrollReveal } from "@/components/scroll-reveal";
 
 export default async function HomePage() {
   let settings = null;
@@ -17,17 +20,11 @@ export default async function HomePage() {
     <>
       <section 
         className="relative overflow-hidden pt-24 pb-16 sm:pt-32 sm:pb-24 lg:pt-40 lg:pb-32 flex items-center justify-center min-h-[80vh]"
-        style={{
-          backgroundImage: 'url("/hero-bg.png")',
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          backgroundBlendMode: "overlay",
-        }}
       >
-        <div className="absolute inset-0 bg-black/60 backdrop-blur-[2px]"></div>
+        <HeroBackground />
         
         <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 w-full z-10 text-center">
-          <div className="animate-in fade-in slide-in-from-bottom-8 duration-1000 ease-out fill-mode-both flex flex-col items-center">
+          <ScrollReveal delay={0.1} direction="up" className="flex flex-col items-center">
             <p className="mb-6 inline-block rounded-full bg-black/30 border border-white/20 px-5 py-2 text-[10px] sm:text-xs font-bold tracking-[0.2em] text-white uppercase shadow-lg backdrop-blur-md">
               {settings?.tagline || "THE CAPITAL OF CRISP."}
             </p>
@@ -59,7 +56,7 @@ export default async function HomePage() {
                 Book a Table
               </Link>
             </div>
-          </div>
+          </ScrollReveal>
         </div>
       </section>
 
@@ -69,31 +66,36 @@ export default async function HomePage() {
         </div>
       )}
 
-      <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-32 relative">
-        <div className="relative z-10 mb-16 flex flex-col items-center text-center">
+      <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-16 pb-32 md:pt-24 relative">
+        <ScrollReveal delay={0.1} direction="up" className="relative z-10 mb-16 flex flex-col items-center text-center">
           <span className="mb-3 font-bold text-dfc-red tracking-[0.2em] text-xs uppercase">Our Signatures</span>
           <h2 className="font-display text-4xl font-extrabold text-zinc-900 md:text-5xl lg:text-6xl tracking-tight">Featured Favourites</h2>
-        </div>
+        </ScrollReveal>
 
-        <div className="relative z-10 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-          {featured.length > 0
-            ? featured.map((item) => (
-              <ItemCard 
-                key={item.id} 
-                item={item} 
-                globalCustomizations={menu?.global_customizations || []} 
-              />
-              ))
-            : [1, 2, 3].map((i) => (
-                <div key={i} className="h-[450px] animate-pulse rounded-[2rem] bg-zinc-100 border border-zinc-50" />
-              ))}
-        </div>
+        <ScrollReveal delay={0.2} direction="up" className="relative z-10 w-full">
+          <ItemCarousel 
+            items={featured} 
+            globalCustomizations={menu?.global_customizations || []} 
+          />
+        </ScrollReveal>
+
+        <ScrollReveal delay={0.3} direction="up" className="relative z-10 mt-16 flex justify-center">
+          <Link
+            href="/menu"
+            className="group flex items-center justify-center gap-2 rounded-full bg-zinc-900 px-8 py-4 font-bold text-white shadow-[0_10px_30px_-10px_rgba(0,0,0,0.5)] transition-all duration-300 hover:-translate-y-1 hover:bg-zinc-800 hover:shadow-[0_20px_50px_-10px_rgba(0,0,0,0.6)] active:scale-95 active:translate-y-0"
+          >
+            View Full Menu
+            <svg className="h-5 w-5 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+            </svg>
+          </Link>
+        </ScrollReveal>
       </section>
 
       <section className="bg-white py-32 relative overflow-hidden border-t border-zinc-100">
         <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="grid gap-16 md:grid-cols-2 lg:gap-24 items-center">
-            <div className="animate-in fade-in slide-in-from-left-8 duration-1000">
+            <ScrollReveal delay={0.1} direction="up">
               <span className="mb-3 block font-bold text-dfc-red tracking-[0.2em] text-xs uppercase">Our Story</span>
               <h2 className="font-display mb-8 text-5xl font-extrabold md:text-6xl tracking-tight leading-[1.1] text-zinc-900">Crisp That Speaks For Itself.</h2>
               <p className="text-zinc-600 leading-relaxed text-lg mb-10 font-light">
@@ -107,9 +109,9 @@ export default async function HomePage() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M14 5l7 7m0 0l-7 7m7-7H3" />
                 </svg>
               </Link>
-            </div>
+            </ScrollReveal>
             
-            <div className="rounded-[2.5rem] bg-zinc-50 p-6 sm:p-10 border border-zinc-100 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.05)]">
+            <ScrollReveal delay={0.3} direction="up" className="rounded-[2.5rem] bg-zinc-50 p-6 sm:p-10 border border-zinc-100 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.05)]">
               <div className="flex items-center gap-4 sm:gap-6 mb-8 border-b border-zinc-200 pb-8">
                 <div className="flex shrink-0 h-14 w-14 items-center justify-center rounded-2xl bg-dfc-red/10 text-dfc-red">
                   <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -148,7 +150,7 @@ export default async function HomePage() {
                   <p className="text-zinc-500 text-sm font-light">Open daily 11:00 AM – 11:00 PM</p>
                 </div>
               </div>
-            </div>
+            </ScrollReveal>
           </div>
         </div>
       </section>
