@@ -7,8 +7,8 @@ export function Logo({ className = "" }: { className?: string }) {
       href="/" 
       className={`flex items-center gap-2 active:scale-95 transition-all cursor-pointer relative z-50 ${className}`}
     >
-      <div className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-[10px] shadow-[0_4px_12px_rgba(0,0,0,0.4)] overflow-hidden border border-zinc-800">
-        <Image src="/logo.png" alt="DFC Logo" fill className="object-cover" />
+      <div className="relative flex h-14 w-14 shrink-0 items-center justify-center transition-transform hover:scale-105">
+        <Image src="/logo_transparent.png" alt="DFC Logo" fill className="object-contain drop-shadow-md" />
       </div>
       <div className="leading-tight hidden sm:block">
         <div className="text-xl font-black tracking-tight text-dfc-red uppercase">Delhi Fried</div>
