@@ -38,7 +38,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="font-sans flex min-h-full flex-col antialiased selection:bg-dfc-yellow selection:text-gray-900 overflow-x-hidden">
         <Providers>
           <Header />
-          <main className="flex-1">{children}</main>
+          <main className="flex-1 pt-24">{children}</main>
           <Footer />
           <Toaster theme="dark" richColors position="bottom-right" />
         </Providers>

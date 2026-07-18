@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { api, type MenuItem } from "@/lib/api";
+import { useState, useEffect } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { api, type MenuItem, API_URL } from "@/lib/api";
 import { formatPrice, cn } from "@/lib/utils";
 import QRCode from "react-qr-code";
+import { toast } from "sonner";
 
 function MenuManager() {
   const { data, isLoading, refetch } = useQuery({ queryKey: ["admin-menu"], queryFn: () => api.getMenu() });
@@ -422,6 +423,38 @@ export default function AdminPage() {
   const { data: stats } = useQuery({ queryKey: ["admin-dashboard"], queryFn: () => api.adminDashboard(), retry: false });
   const { data: orders } = useQuery({ queryKey: ["admin-orders"], queryFn: () => api.adminOrders(), retry: false });
   const { data: tables } = useQuery({ queryKey: ["admin-tables"], queryFn: () => api.adminTables(), retry: false });
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    if (!stats) return;
+
+    const wsUrl = API_URL.replace(/^http/, "ws") + "/api/ws/admin";
+    const ws = new WebSocket(wsUrl);
+
+    ws.onmessage = (event) => {
+      try {
+        const data = JSON.parse(event.data);
+        if (data.event === "new_order") {
+          const audio = new Audio("/notification.mp3");
+          audio.play().catch(console.error);
+
+          toast.success(`New Order #${data.order.id.slice(0, 6).toUpperCase()} received!`, {
+            description: `Total: ${formatPrice(data.order.total)}`,
+            duration: 8000,
+          });
+
+          queryClient.invalidateQueries({ queryKey: ["admin-orders"] });
+          queryClient.invalidateQueries({ queryKey: ["admin-dashboard"] });
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    return () => {
+      ws.close();
+    };
+  }, [stats, queryClient]);
 
   if (!stats) {
     return (

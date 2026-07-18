@@ -5,13 +5,17 @@ import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { api } from "@/lib/api";
 import { formatPrice } from "@/lib/utils";
+import { triggerHaptic, playPopSound } from "@/lib/haptics";
+import { Eye, EyeOff } from "lucide-react";
 
 export default function AccountPage() {
   const [mode, setMode] = useState<"login" | "signup">("login");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
+  const [isPending, setIsPending] = useState(false);
 
   const { data: user, refetch } = useQuery({
     queryKey: ["me"],
@@ -27,15 +31,20 @@ export default function AccountPage() {
 
   const handleAuth = async () => {
     setError("");
+    setIsPending(true);
+    triggerHaptic('heavy');
+    playPopSound();
     try {
       if (mode === "signup") {
         await api.signup({ name, email, password });
       } else {
         await api.login({ email, password });
       }
-      refetch();
+      await refetch();
     } catch (e) {
       setError(e instanceof Error ? e.message : "Authentication failed");
+    } finally {
+      setIsPending(false);
     }
   };
 
@@ -55,7 +64,7 @@ export default function AccountPage() {
 
   if (user) {
     return (
-      <div className="mx-auto max-w-lg px-4 py-8">
+      <div className="mx-auto max-w-lg px-4 py-8 animate-in fade-in zoom-in-95 duration-500">
         <h1 className="mb-6 text-3xl font-bold">My Account</h1>
         <div className="rounded-xl bg-orange-50 p-6 mb-6">
           <p className="font-semibold text-lg">{user.name}</p>
@@ -86,15 +95,45 @@ export default function AccountPage() {
   return (
     <div className="mx-auto max-w-md px-4 py-8">
       <h1 className="mb-6 text-3xl font-bold">{mode === "login" ? "Login" : "Sign Up"}</h1>
-      <div className="space-y-4">
+      <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); handleAuth(); }}>
         {mode === "signup" && (
           <input placeholder="Name" value={name} onChange={(e) => setName(e.target.value)} className="w-full rounded-lg border border-orange-200 px-4 py-2" />
         )}
         <input placeholder="Email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} className="w-full rounded-lg border border-orange-200 px-4 py-2" />
-        <input placeholder="Password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} className="w-full rounded-lg border border-orange-200 px-4 py-2" />
+        <div className="relative">
+          <input 
+            placeholder="Password" 
+            type={showPassword ? "text" : "password"} 
+            value={password} 
+            onChange={(e) => setPassword(e.target.value)} 
+            className="w-full rounded-lg border border-orange-200 px-4 py-2 pr-10" 
+          />
+          <button
+            type="button"
+            onClick={() => setShowPassword(!showPassword)}
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none"
+            aria-label={showPassword ? "Hide password" : "Show password"}
+          >
+            {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+          </button>
+        </div>
         {error && <p className="text-sm text-red-600">{error}</p>}
-        <button onClick={handleAuth} className="w-full rounded-full bg-dfc-red py-3 font-semibold text-white">
-          {mode === "login" ? "Login" : "Create Account"}
+        <button 
+          type="submit" 
+          disabled={isPending}
+          className="w-full flex justify-center items-center gap-2 rounded-full bg-dfc-red py-3 font-semibold text-white transition-all active:scale-95 disabled:opacity-70 disabled:active:scale-100"
+        >
+          {isPending ? (
+            <>
+              <svg className="animate-spin -ml-1 mr-2 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              {mode === "login" ? "Logging in..." : "Creating Account..."}
+            </>
+          ) : (
+            mode === "login" ? "Login" : "Create Account"
+          )}
         </button>
 
         <div className="relative my-6">
@@ -107,6 +146,7 @@ export default function AccountPage() {
         </div>
 
         <button 
+          type="button"
           onClick={handleGoogleLogin} 
           className="flex w-full items-center justify-center gap-2 rounded-full border border-gray-300 bg-white py-3 font-semibold text-gray-700 transition-colors hover:bg-gray-50"
         >
@@ -119,10 +159,10 @@ export default function AccountPage() {
           Google
         </button>
 
-        <button onClick={() => setMode(mode === "login" ? "signup" : "login")} className="mt-4 w-full text-sm text-dfc-red hover:underline">
+        <button type="button" onClick={() => setMode(mode === "login" ? "signup" : "login")} className="mt-4 w-full text-sm text-dfc-red hover:underline">
           {mode === "login" ? "Need an account? Sign up" : "Already have an account? Login"}
         </button>
-      </div>
+      </form>
     </div>
   );
 }
