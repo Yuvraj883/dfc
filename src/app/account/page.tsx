@@ -6,7 +6,7 @@ import Link from "next/link";
 import { api } from "@/lib/api";
 import { formatPrice } from "@/lib/utils";
 import { triggerHaptic, playPopSound } from "@/lib/haptics";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, LogOut, Gift, ShoppingBag, User as UserIcon, ChevronRight } from "lucide-react";
 
 export default function AccountPage() {
   const [mode, setMode] = useState<"login" | "signup">("login");
@@ -64,30 +64,90 @@ export default function AccountPage() {
 
   if (user) {
     return (
-      <div className="mx-auto max-w-lg px-4 py-8 animate-in fade-in zoom-in-95 duration-500">
-        <h1 className="mb-6 text-3xl font-bold">My Account</h1>
-        <div className="rounded-xl bg-orange-50 p-6 mb-6">
-          <p className="font-semibold text-lg">{user.name}</p>
-          <p className="text-sm text-gray-600">{user.email}</p>
-          <p className="mt-2 text-sm font-bold text-dfc-red">🎁 {user.loyalty_points} loyalty points</p>
-        </div>
-        <h2 className="mb-4 text-xl font-bold">Order History</h2>
-        {orders && orders.length > 0 ? (
-          <div className="space-y-3">
-            {orders.map((o) => (
-              <Link key={o.id} href={`/orders/${o.id}`} className="block rounded-xl border border-orange-100 p-4 hover:shadow-sm">
-                <div className="flex justify-between">
-                  <span className="text-sm font-medium">#{o.id.slice(0, 8)}</span>
-                  <span className="text-sm font-bold text-dfc-red">{formatPrice(o.total)}</span>
-                </div>
-                <p className="text-xs text-gray-500 capitalize">{o.status} · {new Date(o.created_at).toLocaleDateString()}</p>
-              </Link>
-            ))}
+      <div className="min-h-screen bg-[#FAFAFA] pt-24 pb-32">
+        <div className="mx-auto max-w-lg px-4 animate-in fade-in slide-in-from-bottom-8 duration-700">
+          <div className="mb-8 flex items-center justify-between">
+            <h1 className="text-3xl font-extrabold tracking-tight text-zinc-900">My Profile</h1>
+            <button 
+              onClick={() => { triggerHaptic('light'); playPopSound(); logout(); }} 
+              className="flex items-center gap-2 rounded-full bg-red-50 px-4 py-2 text-sm font-bold text-red-600 transition-all hover:bg-red-100 active:scale-95 border border-red-100 shadow-sm"
+            >
+              <LogOut size={16} />
+              Log Out
+            </button>
           </div>
-        ) : (
-          <p className="text-gray-500 text-sm">No orders yet.</p>
-        )}
-        <button onClick={logout} className="mt-6 text-sm text-red-600 hover:underline">Log out</button>
+
+          <div className="relative mb-10 overflow-hidden rounded-[2.5rem] bg-gradient-to-br from-dfc-red to-orange-500 p-8 text-white shadow-[0_20px_60px_-15px_rgba(230,46,53,0.4)]">
+            <div className="absolute -right-12 -top-12 h-40 w-40 rounded-full bg-white/20 blur-3xl" />
+            <div className="absolute -bottom-12 -left-12 h-40 w-40 rounded-full bg-black/20 blur-3xl" />
+            
+            <div className="relative z-10 flex items-center gap-5">
+              <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-white/20 text-2xl font-bold backdrop-blur-md shadow-inner border border-white/30">
+                {user.name.charAt(0).toUpperCase()}
+              </div>
+              <div>
+                <p className="text-2xl font-bold tracking-tight">{user.name}</p>
+                <p className="text-white/80 text-sm font-medium">{user.email}</p>
+              </div>
+            </div>
+            
+            <div className="relative z-10 mt-8 flex items-center gap-4 rounded-2xl bg-black/20 p-4 backdrop-blur-md border border-white/10">
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-yellow-400 to-yellow-600 text-white shadow-lg">
+                <Gift size={24} />
+              </div>
+              <div>
+                <p className="text-[10px] font-bold uppercase tracking-wider text-white/70">Loyalty Balance</p>
+                <p className="text-2xl font-extrabold">{user.loyalty_points} <span className="text-sm font-medium text-white/80">Pts</span></p>
+              </div>
+            </div>
+          </div>
+
+          <div className="mb-6 flex items-center gap-2 px-2">
+            <ShoppingBag size={20} className="text-zinc-400" />
+            <h2 className="text-xl font-extrabold text-zinc-900">Recent Orders</h2>
+          </div>
+          
+          {orders && orders.length > 0 ? (
+            <div className="space-y-4">
+              {orders.map((o) => (
+                <Link key={o.id} href={`/orders/${o.id}`} className="group block overflow-hidden rounded-3xl border border-zinc-100 bg-white p-5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] transition-all hover:-translate-y-1 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)]">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <div className="flex items-center gap-3">
+                        <span className="text-xs font-bold tracking-wider text-zinc-500 uppercase">Order #{o.id.slice(0, 6)}</span>
+                        <span className={`rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider ${
+                          o.status === 'completed' ? 'bg-green-100 text-green-700' :
+                          o.status === 'preparing' ? 'bg-orange-100 text-orange-700' :
+                          'bg-zinc-100 text-zinc-600'
+                        }`}>
+                          {o.status}
+                        </span>
+                      </div>
+                      <p className="mt-2 text-xs font-medium text-zinc-500">
+                        {new Date(o.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-4">
+                      <span className="text-lg font-extrabold text-dfc-red">{formatPrice(o.total)}</span>
+                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-zinc-50 text-zinc-400 transition-colors group-hover:bg-dfc-red group-hover:text-white">
+                        <ChevronRight size={16} />
+                      </div>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          ) : (
+            <div className="flex flex-col items-center justify-center rounded-3xl border border-zinc-100 bg-zinc-50 py-16 text-center">
+              <ShoppingBag size={48} className="mb-4 text-zinc-300" />
+              <p className="text-lg font-bold text-zinc-900">No orders yet</p>
+              <p className="text-sm text-zinc-500">Your delicious history will appear here.</p>
+              <Link href="/catering" className="mt-6 rounded-full bg-zinc-900 px-6 py-3 text-sm font-bold text-white transition-all hover:bg-zinc-800 hover:-translate-y-0.5 shadow-lg active:scale-95">
+                Start an Order
+              </Link>
+            </div>
+          )}
+        </div>
       </div>
     );
   }
