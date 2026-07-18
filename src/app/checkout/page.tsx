@@ -14,11 +14,15 @@ export default function CheckoutPage() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
+  const [phone, setPhone] = useState("");
+  const [locationUrl, setLocationUrl] = useState("");
+  const [locating, setLocating] = useState(false);
   const [promoInput, setPromoInput] = useState("");
   const [paymentMethod, setPaymentMethod] = useState<"stripe" | "pay_at_counter">("stripe");
   const [loyaltyRedeem] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const { setOrderType } = useCart();
 
   const sub = subtotal();
   const tax = (sub - promoDiscount) * 0.05;
@@ -34,6 +38,27 @@ export default function CheckoutPage() {
     } catch {
       setError("Invalid promo code");
     }
+  };
+
+  const handleLocateMe = () => {
+    setLocating(true);
+    triggerHaptic('light');
+    if (!navigator.geolocation) {
+      setError("Geolocation is not supported by your browser");
+      setLocating(false);
+      return;
+    }
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const { latitude, longitude } = position.coords;
+        setLocationUrl(`https://www.google.com/maps?q=${latitude},${longitude}`);
+        setLocating(false);
+      },
+      (err) => {
+        setError("Unable to retrieve your location. Please paste the link manually.");
+        setLocating(false);
+      }
+    );
   };
 
   const placeOrder = async () => {
@@ -60,6 +85,7 @@ export default function CheckoutPage() {
           guest_name: name || undefined,
           guest_email: email || undefined,
           guest_phone: phone || undefined,
+          location_url: locationUrl || undefined,
           loyalty_points_redeem: loyaltyRedeem,
         },
         tableToken,
@@ -90,7 +116,9 @@ export default function CheckoutPage() {
   };
 
   const isFormValid = () => {
-    return name.trim().length > 0 && email.trim().length > 0 && phone.trim().length > 0;
+    const baseValid = name.trim().length > 0 && email.trim().length > 0 && phone.trim().length > 0;
+    if (orderType === "delivery") return baseValid && locationUrl.trim().length > 0;
+    return baseValid;
   };
 
   if (items.length === 0) {
@@ -106,6 +134,26 @@ export default function CheckoutPage() {
       <ScrollReveal delay={0.1} direction="up" className="mx-auto max-w-lg px-4">
         <h1 className="mb-8 text-4xl font-extrabold tracking-tight text-zinc-900">Checkout</h1>
         <div className="space-y-5 rounded-[2.5rem] border border-zinc-100 bg-white p-8 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.05)]">
+          {!tableToken && (
+            <div className="pb-2 border-b border-zinc-100">
+              <label className="text-sm font-bold text-zinc-600 mb-2 block">Order Type</label>
+              <div className="flex gap-3">
+                <button
+                  onClick={() => { triggerHaptic('light'); playClickSound(); setOrderType("pickup"); }}
+                  className={`flex-1 rounded-2xl border-2 py-3.5 text-sm font-bold transition-all active:scale-95 ${orderType === "pickup" ? "border-dfc-red bg-red-50 text-dfc-red" : "border-zinc-100 bg-zinc-50 text-zinc-500 hover:bg-zinc-100"}`}
+                >
+                  Pickup
+                </button>
+                <button
+                  onClick={() => { triggerHaptic('light'); playClickSound(); setOrderType("delivery"); }}
+                  className={`flex-1 rounded-2xl border-2 py-3.5 text-sm font-bold transition-all active:scale-95 ${orderType === "delivery" ? "border-dfc-red bg-red-50 text-dfc-red" : "border-zinc-100 bg-zinc-50 text-zinc-500 hover:bg-zinc-100"}`}
+                >
+                  Delivery
+                </button>
+              </div>
+            </div>
+          )}
+          
           <div>
             <label className="text-sm font-bold text-zinc-600 mb-1 block">Full Name</label>
             <input
@@ -134,6 +182,30 @@ export default function CheckoutPage() {
               className="w-full rounded-2xl bg-zinc-50 border border-zinc-200 px-5 py-3.5 focus:bg-white focus:outline-none focus:ring-2 focus:ring-dfc-red/30 transition-colors text-zinc-900 placeholder-zinc-400 font-medium"
             />
           </div>
+
+          {orderType === "delivery" && (
+            <div className="rounded-2xl border border-orange-100 bg-orange-50/50 p-5 space-y-4">
+              <div className="flex items-center justify-between">
+                <label className="text-sm font-bold text-zinc-600 block">Delivery Location</label>
+                <button 
+                  onClick={handleLocateMe}
+                  disabled={locating}
+                  className="flex items-center gap-1.5 rounded-full bg-dfc-red px-3 py-1.5 text-xs font-bold text-white shadow-sm hover:bg-dfc-red-dark active:scale-95 disabled:opacity-50"
+                >
+                  {locating ? "Locating..." : "📍 Locate Me"}
+                </button>
+              </div>
+              <input
+                placeholder="Or paste Google Maps Share Link"
+                value={locationUrl}
+                onChange={(e) => setLocationUrl(e.target.value)}
+                className="w-full rounded-xl bg-white border border-zinc-200 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-dfc-red/30 text-zinc-900 placeholder-zinc-400"
+              />
+              <p className="text-xs text-zinc-500">
+                Tap &quot;Locate Me&quot; to instantly fetch your exact GPS coordinates, or paste a Google Maps link.
+              </p>
+            </div>
+          )}
           
           <div className="pt-2">
             <label className="text-sm font-bold text-zinc-600 mb-1 block">Promo Code</label>

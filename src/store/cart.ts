@@ -16,13 +16,13 @@ interface CartState {
   promoCode: string | null;
   promoDiscount: number;
   tableToken: string | null;
-  orderType: "pickup" | "dine_in";
+  orderType: "pickup" | "dine_in" | "delivery";
   addItem: (item: CartItem) => void;
   removeItem: (menuItemId: string, customizationIds: string[]) => void;
   updateQuantity: (menuItemId: string, customizationIds: string[], quantity: number) => void;
   setPromo: (code: string | null, discount: number) => void;
   setTableToken: (token: string | null) => void;
-  setOrderType: (type: "pickup" | "dine_in") => void;
+  setOrderType: (type: "pickup" | "dine_in" | "delivery") => void;
   clear: () => void;
   subtotal: () => number;
 }

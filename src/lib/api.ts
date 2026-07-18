@@ -71,6 +71,7 @@ export interface Order {
   created_at: string;
   items: OrderItem[];
   guest_token?: string;
+  location_url?: string;
 }
 
 export interface Settings {

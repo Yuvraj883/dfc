@@ -519,6 +519,11 @@ export default function AdminPage() {
                   <div>
                     <p className="font-bold text-gray-900">Order #{o.id.slice(0, 6).toUpperCase()}</p>
                     <p className="text-sm text-gray-500 font-medium capitalize">{o.status} · {formatPrice(o.total)}</p>
+                    {o.location_url && (
+                      <a href={o.location_url} target="_blank" rel="noopener noreferrer" className="mt-1 inline-flex items-center gap-1 text-xs font-bold text-blue-600 hover:text-blue-800 bg-blue-50 px-2 py-0.5 rounded-full border border-blue-100">
+                        📍 View on Map
+                      </a>
+                    )}
                   </div>
                 </div>
                 <div className="flex gap-2">
